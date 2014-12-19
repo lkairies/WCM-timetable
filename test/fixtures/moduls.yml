@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  titel: MyString
+  nummer: MyString
+  studiengang: 1
+  beschreibung: MyText
+  form: 1
+  credits: 1
+  semesterturnus: 1
+  verantwortlich: MyString
+  verwendbarkeit: MyText
+
+two:
+  titel: MyString
+  nummer: MyString
+  studiengang: 1
+  beschreibung: MyText
+  form: 1
+  credits: 1
+  semesterturnus: 1
+  verantwortlich: MyString
+  verwendbarkeit: MyText
