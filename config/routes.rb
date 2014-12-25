@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get 'lehrveranstaltungs/show'
+
+  get 'moduls/show'
+
+  get 'moduls/list'
+
+  resources :moduls , only: [:show, :index] do
+     resources :lehrveranstaltungs, only: [:show]
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
