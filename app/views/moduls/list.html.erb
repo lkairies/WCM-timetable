@@ -1,2 +1,35 @@
 <h1>Moduls#list</h1>
 <p>Find me in app/views/moduls/list.html.erb</p>
+<table>
+ <tr>
+  <th>Titel</th>
+  <th>Nummer</th>
+  <th>Beschreibung</th>
+  <th>Verantwortlich</th>
+  <th>studiengang</th>
+  <th>form</th>
+  <th>credits</th>
+  <th>semesterturnus</th>
+  <th>verwendbarkeit</th>
+  <th>lehrveranstaltungs_id</th>
+  <th>created_at</th>
+  <th>updated_at</th>
+ </tr>
+
+ <% @moduls.each do |modul| %>
+  <tr>
+   <td><%= modul.titel %></td>
+   <td><%= modul.nummer %></td>
+   <td><%= modul.beschreibung %></td>
+   <td><%= modul.verantwortlich %></td>
+   <td><%= modul.studiengang %></td>
+   <td><%= modul.form %></td>
+   <td><%= modul.credits %></td>
+   <td><%= modul.semesterturnus %></td>
+   <td><%= modul.verwendbarkeit %></td>
+   <td><%= modul.lehrveranstaltungs_id %></td>
+   <td><%= modul.created_at %></td>
+   <td><%= modul.updated_at %></td>
+  </tr>
+ <% end %>
+</table>

@@ -3,5 +3,6 @@ class ModulsController < ApplicationController
   end
 
   def list
+    @moduls = Modul.all
   end
 end
