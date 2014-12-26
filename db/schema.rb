@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141219123931) do
+ActiveRecord::Schema.define(version: 20141226132138) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
@@ -40,6 +40,17 @@ ActiveRecord::Schema.define(version: 20141219123931) do
     t.integer  "lehrveranstaltungs_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "art"
+    t.string   "titel_englisch"
+    t.string   "art_englisch"
+    t.string   "empfohlen_fuer"
+    t.string   "dauer"
+    t.text     "lehrformen"
+    t.text     "ziele"
+    t.text     "teilnahmevorraussetzungen"
+    t.text     "literaturangabe"
+    t.text     "vergabe_von_lp"
+    t.text     "pruefungsleistungen"
   end
 
 end
