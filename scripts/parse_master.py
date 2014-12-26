@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
+#################################
+# vorraussetzungen: pdftotext version 0.18.4
+# python3, python3-urllib3
+#
+import os
+import sys
 import io
+import json
 from parser_helpers import *
 DATE_OF_PDF = "26. September 2013"
 MODULE_DELIMITER_pdftotext = "Master of Science Informatik\nAkademischer Grad\n\nModulnummer\n\nModulform\n\nMaster of Science\n\n"
 PAGE_BREAK_STRING_pdftotext = "\n\n"+DATE_OF_PDF+"\n\n\f"
+
+current_modules = \
+'http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html'
+
+testurl = 'file://'+os.path.dirname(os.path.realpath(__file__))+'/test/ma-inf-module.pdf'
 
 #Es gibt immer zwei Titel für ein Modul (deutsch, englisch).
 #Bei manchen Modulen ist direkt nach dem Titel eine Angabe zur Modulart (Kern- / Vertiefungsmodul.
@@ -66,11 +78,24 @@ def parse_module(module_string):
     return modul
 
 def parse(pdftotext_string):
-    pages = pdftotext_string.replace(PAGE_BREAK_STRING_pdftotext, "\n\n").split(MODULE_DELIMITER_pdftotext)
-    #ignore first item, because its empty
-    iterpages = iter(pages)
-    next(iterpages)
-    module = []
-    for page in iterpages:
-        module.append(parse_module(page))
-    return module
+    txtmodules = pdftotext_string.replace(PAGE_BREAK_STRING_pdftotext, "\n\n").split(MODULE_DELIMITER_pdftotext)
+    #ignore first page, because its empty
+    itermodules = iter(txtmodules)
+    next(itermodules)
+    modules = []
+    for txtmodule in itermodules:
+        modules.append(parse_module(txtmodule))
+    return modules
+
+def main(url):
+    module = parse(pdf_url_to_text_string(url))
+    print(json.dumps(module))
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "current":
+            main(current_modules)
+        else:
+            main(sys.argv[1])
+    else:
+        main(testurl)

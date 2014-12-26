@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+import urllib.request
+import subprocess
+def pdf_url_to_text_string(url):
+    pdf_stream = urllib.request.urlopen(url)
+    pdftotext = subprocess.Popen(["pdftotext", "-", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    return pdftotext.communicate(pdf_stream.read())[0].decode()
+
 #Annahme: Es gibt immer eine leere Zeile nach einem key.
 def seek_to_value_for_key(module, key):
     line = ''
