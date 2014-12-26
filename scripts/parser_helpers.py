@@ -43,7 +43,7 @@ def get_multiline_value_until_key_and_seek_to_its_value(stream, until_key):
                 lines.append(nextline)
         else:
             lines.append(line)
-    if len(lines) > 0 and lines[-1] == "":
+    while len(lines) > 0 and lines[-1] == "":
         lines.pop()
     return "\n".join(lines)
 
@@ -54,6 +54,6 @@ def get_multiline_value_until_eof(stream):
         if not line:
             break
         lines.append(line.strip())
-    if len(lines) > 0 and lines[-1] == "":
+    while len(lines) > 0 and lines[-1] == "":
         lines.pop()
     return "\n".join(lines)

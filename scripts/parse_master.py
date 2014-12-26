@@ -10,7 +10,7 @@ import json
 from parser_helpers import *
 DATE_OF_PDF = "26. September 2013"
 MODULE_DELIMITER_pdftotext = "Master of Science Informatik\nAkademischer Grad\n\nModulnummer\n\nModulform\n\nMaster of Science\n\n"
-PAGE_BREAK_STRING_pdftotext = "\n\n"+DATE_OF_PDF+"\n\n\f"
+PAGE_BREAK_STRING_pdftotext = "\n"+DATE_OF_PDF+"\n\n\f"
 
 current_modules = \
 'http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html'
@@ -45,45 +45,37 @@ def get_title(module):
 def parse_module(module_string):
     #dictionary keys must match database schema
     modul = dict()
+    modul['studiengang'] = 'master'
     stream = io.StringIO(module_string)
     modul['nummer'] = stream.readline().strip()
     stream.readline()
     modul['form'] = stream.readline().strip()
     seek_to_value_for_key(stream, 'Modultitel')
-    modul['titel'], modul['Modulart'] = get_title(stream)
+    modul['titel'], modul['art'] = get_title(stream)
     seek_to_value_for_key(stream, 'Modultitel (englisch)')
-    #unused
-    modul['Modultitel (englisch)'], modul['Modulart (englisch)'] = get_title(stream)
+    modul['titel_englisch'], modul['art_englisch'] = get_title(stream)
     seek_to_value_for_key(stream, 'Empfohlen für:')
-    #unused
-    modul['Empfohlen für'] = get_single_line_value(stream)
+    modul['empfohlen_fuer'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Verantwortlich')
     modul['verantwortlich'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Dauer')
-    #unused
-    modul['Dauer'] = get_single_line_value(stream)
+    modul['dauer'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Modulturnus')
     modul['semesterturnus'] = get_single_line_value(stream)
     #TODO: Lehrformen
     seek_to_value_for_key(stream, 'Lehrformen')
-    #unused
-    modul['Lehrformen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Arbeitsaufwand')
-    modul['credits'] = get_single_line_value(stream)
+    modul['lehrformen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Arbeitsaufwand')
+    modul['credits'] = get_single_line_value(stream).split()[0]
     seek_to_value_for_key(stream, 'Verwendbarkeit')
     modul['verwendbarkeit'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Ziele')
     #TODO: Verwendbarkeit
     #Anmerkung: mehrere Zeilen möglich, unterschiedliche arten von zeilen (•, -, )
-    #unused
-    modul['Ziele'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Inhalt')
+    modul['ziele'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Inhalt')
     modul['beschreibung'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Teilnahmevoraussetzungen')
-    #unused
-    modul['Teilnahmevorraussetzungen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Literaturangabe')
-    #unused
-    modul['Literaturangabe'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Vergabe von Leistungspunkten')
-    #unused
-    modul['Vergabe von Leistungspunkten'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Prüfungsleistungen und -vorleistungen')
-    #unused
-    modul['Prüfungsleistungen und -vorleistungen'] = get_multiline_value_until_eof(stream)
+    modul['teilnahmevorraussetzungen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Literaturangabe')
+    modul['literaturangabe'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Vergabe von Leistungspunkten')
+    modul['vergabe_von_lp'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Prüfungsleistungen und -vorleistungen')
+    modul['pruefungsleistungen'] = get_multiline_value_until_eof(stream)
 
     return modul
 
