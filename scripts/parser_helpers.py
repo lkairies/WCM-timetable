@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import urllib.request
 import subprocess
+
+PAGE_BREAK_REGEX = r"\n\d\d?\. \w+ \d\d\d\d\n\n\f" # example: "26. September 2013"
+
 def pdf_url_to_text_string(url):
     pdf_stream = urllib.request.urlopen(url)
     pdftotext = subprocess.Popen(["pdftotext", "-", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)

@@ -7,10 +7,9 @@ import os
 import sys
 import io
 import json
+import re
 from parser_helpers import *
-DATE_OF_PDF = "26. September 2013"
 MODULE_DELIMITER_pdftotext = "Master of Science Informatik\nAkademischer Grad\n\nModulnummer\n\nModulform\n\nMaster of Science\n\n"
-PAGE_BREAK_STRING_pdftotext = "\n"+DATE_OF_PDF+"\n\n\f"
 
 current_modules = \
 'http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html'
@@ -80,7 +79,7 @@ def parse_module(module_string):
     return modul
 
 def parse(pdftotext_string):
-    txtmodules = pdftotext_string.replace(PAGE_BREAK_STRING_pdftotext, "\n\n").split(MODULE_DELIMITER_pdftotext)
+    txtmodules = re.sub(PAGE_BREAK_REGEX, "\n\n", pdftotext_string).split(MODULE_DELIMITER_pdftotext)
     #ignore first page, because its empty
     itermodules = iter(txtmodules)
     next(itermodules)
