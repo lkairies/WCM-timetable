@@ -43,36 +43,46 @@ def get_title(module):
     return title, art
 
 def parse_module(module_string):
+    #dictionary keys must match database schema
     modul = dict()
     stream = io.StringIO(module_string)
-    modul['Modulnummer'] = stream.readline().strip()
+    modul['nummer'] = stream.readline().strip()
     stream.readline()
-    modul['Modulform'] = stream.readline().strip()
+    modul['form'] = stream.readline().strip()
     seek_to_value_for_key(stream, 'Modultitel')
-    modul['Modultitel'], modul['Modulart'] = get_title(stream)
+    modul['titel'], modul['Modulart'] = get_title(stream)
     seek_to_value_for_key(stream, 'Modultitel (englisch)')
+    #unused
     modul['Modultitel (englisch)'], modul['Modulart (englisch)'] = get_title(stream)
     seek_to_value_for_key(stream, 'Empfohlen für:')
+    #unused
     modul['Empfohlen für'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Verantwortlich')
-    modul['Verantwortlich'] = get_single_line_value(stream)
+    modul['verantwortlich'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Dauer')
+    #unused
     modul['Dauer'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Modulturnus')
-    modul['Modulturnus'] = get_single_line_value(stream)
+    modul['semesterturnus'] = get_single_line_value(stream)
     #TODO: Lehrformen
     seek_to_value_for_key(stream, 'Lehrformen')
+    #unused
     modul['Lehrformen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Arbeitsaufwand')
-    modul['Arbeitsaufwand'] = get_single_line_value(stream)
+    modul['credits'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Verwendbarkeit')
-    modul['Verwendbarkeit'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Ziele')
+    modul['verwendbarkeit'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Ziele')
     #TODO: Verwendbarkeit
     #Anmerkung: mehrere Zeilen möglich, unterschiedliche arten von zeilen (•, -, )
+    #unused
     modul['Ziele'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Inhalt')
-    modul['Inhalt'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Teilnahmevoraussetzungen')
+    modul['beschreibung'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Teilnahmevoraussetzungen')
+    #unused
     modul['Teilnahmevorraussetzungen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Literaturangabe')
+    #unused
     modul['Literaturangabe'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Vergabe von Leistungspunkten')
+    #unused
     modul['Vergabe von Leistungspunkten'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Prüfungsleistungen und -vorleistungen')
+    #unused
     modul['Prüfungsleistungen und -vorleistungen'] = get_multiline_value_until_eof(stream)
 
     return modul
