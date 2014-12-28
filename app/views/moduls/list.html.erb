@@ -18,7 +18,7 @@
 
  <% @moduls.each do |modul| %>
   <tr>
-   <td><%= modul.titel %></td>
+   <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
    <td><%= modul.nummer %></td>
    <td><%= modul.beschreibung %></td>
    <td><%= modul.verantwortlich %></td>
