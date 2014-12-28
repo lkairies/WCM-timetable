@@ -9,6 +9,18 @@ lvs1 = Lehrveranstaltung.create([{ titel: "Datenbanken 1", dozent: "Rahm", form:
 
 lvs2 = Lehrveranstaltung.create([{ titel: "Grundlagen theoretische Informatik", dozent: "Bogdan", form: :vorlesung, wochentag: [:mi, :fr], zeit_von: ["11:15", "11:15"], zeit_bis: ["12:45", "12:45"], raum: ["S3-14", "S3-12"], website: "foo.org/ti"}])
 
-Modul.create([{ titel: "Grundlagen Datenbanken", nummer: "000-111-222", studiengang: :bachelor, beschreibung: "FOO FOO FOO \n FOO FOO", credits: 5, semesterturnus: :ws, verantwortlich: "AG Datenbanken", verwendbarkeit: [:ai, :pi], lehrveranstaltungs: lvs1}])
+Modul.create([{ titel: "Grundlagen Datenbanken", nummer: "000-111-222", studiengang: :bachelor, beschreibung: "FOO FOO FOO \n FOO FOO", credits: 5, semesterturnus: "jedes Wintersemester", verantwortlich: "AG Datenbanken", verwendbarkeit: [:ai, :pi], lehrveranstaltungs: lvs1}])
 
-Modul.create([{ titel: "Technische Informatik", nummer: "111-222-222", studiengang: :bachelor, beschreibung: "FOO FOO FOO \n FOO FOO", credits: 5, semesterturnus: :ss, verantwortlich: "AG Technische Informatik", verwendbarkeit: [:tei], lehrveranstaltungs: lvs2}])
+Modul.create([{ titel: "Technische Informatik", nummer: "111-222-222", studiengang: :bachelor, beschreibung: "FOO FOO FOO \n FOO FOO", credits: 5, semesterturnus: "jedes Sommersemester", verantwortlich: "AG Technische Informatik", verwendbarkeit: [:tei], lehrveranstaltungs: lvs2}])
+
+jsonmaster = `scripts/parse_master.py`
+modules = JSON.parse(jsonmaster)
+modules.each do |mod|
+  Modul.create!(mod)
+end
+
+jsonbachelor = `scripts/parse_bachelor.py`
+modules = JSON.parse(jsonbachelor)
+modules.each do |mod|
+  Modul.create!(mod)
+end

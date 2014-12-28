@@ -3,8 +3,8 @@ class Modul < ActiveRecord::Base
 
    enum studiengang: [:bachelor, :master]
    # pm = Pflichtmodul, km = Kernmodul, vm = Vertiefungsmodul, sm = Seminarmodul
-   enum form: [:pm, :km, :vm, :sm]
-   enum semesterturnus: [:ws, :ss]
+   enum form: [:Wahl, :Wahlpflicht, :Pflicht]
+   enum semesterturnus: ["jedes Wintersemester", "jedes Sommersemester", "jedes Semester"]
 
    serialize :verwendbarkeit     
 end
