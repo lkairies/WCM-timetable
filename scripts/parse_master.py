@@ -60,7 +60,7 @@ def parse_module(module_string):
     seek_to_value_for_key(stream, 'Dauer')
     modul['dauer'] = get_single_line_value(stream)
     seek_to_value_for_key(stream, 'Modulturnus')
-    modul['semesterturnus'] = get_single_line_value(stream)
+    modul['semesterturnus'] = get_semesterturnus(stream)
     #TODO: Lehrformen
     seek_to_value_for_key(stream, 'Lehrformen')
     modul['lehrformen'] = get_multiline_value_until_key_and_seek_to_its_value(stream, 'Arbeitsaufwand')
@@ -90,13 +90,20 @@ def parse(pdftotext_string):
 
 def main(url):
     module = parse(pdf_url_to_text_string(url))
-    print(json.dumps(module))
+    return module
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        if sys.argv[1] == "current":
-            main(current_modules)
+        if sys.argv[1] == "-c":
+            print(json.dumps(main(current_modules)))
+        elif sys.argv[1][0:2] == "-t":
+            modules = main(testurl)
+            for modul in modules:
+                attributes = []
+                for i in range(2, len(sys.argv)):
+                    attributes.append(modul[sys.argv[i]])
+                print(attributes)
         else:
-            main(sys.argv[1])
+            print(json.dumps(main(sys.argv[1])))
     else:
-        main(testurl)
+        print(json.dumps(main(testurl)))

@@ -60,3 +60,10 @@ def get_multiline_value_until_eof(stream):
     while len(lines) > 0 and lines[-1] == "":
         lines.pop()
     return "\n".join(lines)
+
+turnus_map = { 'jedes Semester' : 'WINTER_SOMMER',
+               'jedes Sommersemester' : 'SOMMER',
+               'jedes Wintersemester' : 'WINTER' }
+
+def get_semesterturnus(stream):
+    return turnus_map[get_single_line_value(stream)]
