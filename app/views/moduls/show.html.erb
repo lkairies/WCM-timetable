@@ -23,3 +23,19 @@
   Inhalt:<br />
   <%= simple_format(@modul.beschreibung) %>
 </div>
+
+<div>
+  Lehrveranstaltungen:<br />
+  <% Lehrveranstaltung.where(modul_id: @modul.nummer).each do |lv| %>
+    <div>
+      <%= lv.titel %><br />
+      <%= lv.dozent %><br />
+      <%= lv.form %><br />
+      <%= lv.wochentag %><br />
+      <%= lv.zeit_von %><br />
+      <%= lv.zeit_bis %><br />
+      <%= lv.raum %><br />
+      <%= lv.website %><br />
+    </div><br />
+  <% end %>
+</div>

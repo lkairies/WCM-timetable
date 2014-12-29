@@ -4,32 +4,30 @@
  <tr>
   <th>Titel</th>
   <th>Nummer</th>
-  <th>Beschreibung</th>
   <th>Verantwortlich</th>
   <th>studiengang</th>
   <th>form</th>
   <th>credits</th>
   <th>semesterturnus</th>
   <th>verwendbarkeit</th>
-  <th>lehrveranstaltungs_id</th>
-  <th>created_at</th>
-  <th>updated_at</th>
+  <th>lehrveranstaltungs</th>
  </tr>
 
  <% @moduls.each do |modul| %>
   <tr>
    <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
    <td><%= modul.nummer %></td>
-   <td><%= modul.beschreibung %></td>
    <td><%= modul.verantwortlich %></td>
    <td><%= modul.studiengang %></td>
    <td><%= modul.form %></td>
    <td><%= modul.credits %></td>
    <td><%= modul.semesterturnus %></td>
    <td><%= modul.verwendbarkeit %></td>
-   <td><%= modul.lehrveranstaltungs_id %></td>
-   <td><%= modul.created_at %></td>
-   <td><%= modul.updated_at %></td>
+   <td>
+    <% Lehrveranstaltung.where(modul_id: modul.nummer).each do |lv| %>
+     <%= lv.titel %><br />
+    <% end %>
+   </td>
   </tr>
  <% end %>
 </table>

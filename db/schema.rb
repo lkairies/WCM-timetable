@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141226132138) do
+ActiveRecord::Schema.define(version: 20141229164321) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20141226132138) do
     t.text     "zeit_bis"
     t.text     "raum"
     t.string   "website"
-    t.integer  "modul_id"
+    t.string   "modul_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 20141226132138) do
     t.integer  "semesterturnus"
     t.string   "verantwortlich"
     t.text     "verwendbarkeit"
-    t.integer  "lehrveranstaltungs_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "art"
