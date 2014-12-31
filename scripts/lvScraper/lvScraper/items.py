@@ -7,6 +7,10 @@
 
 import scrapy
 
+class LinkingElement(scrapy.Item):
+  linkurl = scrapy.Field()
+  html_a = scrapy.Field()
+
 class CourseItem(scrapy.Item):
   url = scrapy.Field()
   html_title_text = scrapy.Field()

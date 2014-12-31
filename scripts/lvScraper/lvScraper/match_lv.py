@@ -45,7 +45,7 @@ def compare_title(title_candidate, title):
   #weight form match a little less than title similarity
   if title["lv_form"] == title_candidate["lv_form"]:
     result = 0.3 + result
-
+  #~ print(result, title_candidate)
   return result
 
 def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
@@ -58,11 +58,14 @@ def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
   title_candidates = []
   title_candidates.append(webpage['html_title_text'])
   root = lxml.html.fromstring(webpage['html_body'])
+  nodes = []
+  for link in webpage["links"]:
+    nodes.append(lxml.html.fromstring(link))
   for path in title_xpaths:
-    nodes = root.xpath(path)
-    for node in nodes:
-      text = lxml.html.tostring(node, method="text", encoding='unicode')
-      title_candidates.append(text)
+    nodes += root.xpath(path)
+  for node in nodes:
+    text = lxml.html.tostring(node, method="text", encoding='unicode')
+    title_candidates.append(text)
   scores = []
   for title_candidate in title_candidates:
     title_candidate = normalize_title_and_get_lv_form(title_candidate)
@@ -76,15 +79,29 @@ def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
     score += 0.5
   return score
 
-
+def split_corpus_to_pages_and_links(corpus):
+  pages = []
+  links = []
+  for item in corpus:
+    if "url" in item:
+      pages.append(item)
+    else:
+      links.append(item)
+  return pages, links
 
 def find_best_match(title_string, modulnummer, corpus):
-
   print("finding webpage for:", title_string)
+  pages, links = split_corpus_to_pages_and_links(corpus)
   #store pairs of (score, url)
   urls_score = []
-  for webpage in corpus:
+  for webpage in pages:
+    links_to_page = []
+    for link in links:
+      if link["linkurl"] == webpage["url"]:
+        links_to_page.append(link["html_a"])
+    webpage["links"] = links_to_page
     urls_score.append( ( compare_webpage_to_title_and_modul(webpage, title_string, modulnummer), webpage['url'] ) )
+
     #~ print("score:",urls_score[-1][0], "\tpage:",urls_score[-1][1])
   return max(urls_score)[1]
 
@@ -125,4 +142,4 @@ def test_normalize():
     print("FAIL!")
   else:
     print("SUCCESS!")
-#~ test()
+test()
