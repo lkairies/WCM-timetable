@@ -12,30 +12,28 @@ from difflib import SequenceMatcher
 lv_forms = frozenset([u'Übung', 'Vorlesung', 'Praktikum', 'Seminar'])
 
 def normalize_title_and_get_lv_form( string ):
-    #~ node = lxml.html.fromstring(string)
-    #~ text = lxml.html.tostring(node, method="text", encoding='unicode')
-    # this is supposed to match any whitespace and punctuation characters
-    # need UNICODE flag for special whitespaces
-    #~ r = re.compile(r'[\s{}]+'.format(re.escape(punctuation)), flags=re.UNICODE)
-    r = re.compile(r'\W+', flags=re.UNICODE)
+  # this is supposed to match any whitespace and punctuation characters
+  # need UNICODE flag for special whitespaces
+  #~ r = re.compile(r'[\s{}]+'.format(re.escape(punctuation)), flags=re.UNICODE)
+  r = re.compile(r'\W+', flags=re.UNICODE)
 
-    form = ''
-    title_tokens = []
-    for t in r.split(string):
-        # test for empty string. this should not happen! check splitting regex!!!! (python bug?)
-        if t == '':
-            #~ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! empty string after split")
-            #~ print(text)
-            #~ print(title_tokens)
-            pass
-        elif t in lv_forms:
-            if form == '':
-                form = t
-        else:
-            title_tokens.append(t)
-    if form == '':
-        form = 'unknown'
-    return ({"title": " ".join(title_tokens), "lv_form": form})
+  form = ''
+  title_tokens = []
+  for t in r.split(string):
+    # test for empty string. this should not happen! check splitting regex!!!! (python bug?)
+    if t == '':
+      #~ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! empty string after split")
+      #~ print(text)
+      #~ print(title_tokens)
+      pass
+    elif t in lv_forms:
+      if form == '':
+        form = t
+    else:
+      title_tokens.append(t)
+  if form == '':
+    form = 'unknown'
+  return ({"title": " ".join(title_tokens), "lv_form": form})
 
 # returns float between 0 and 1
 def compare_title(title_candidate, title):
@@ -44,7 +42,7 @@ def compare_title(title_candidate, title):
   #get title similarity without form
   result = 0.7 * SequenceMatcher(None, title["title"], title_candidate["title"]).ratio()
 
-  #weight form match a little less than title match
+  #weight form match a little less than title similarity
   if title["lv_form"] == title_candidate["lv_form"]:
     result = 0.3 + result
 
@@ -105,7 +103,6 @@ def test_lv(title, modulnummer, assert_url, corpus):
     print(url)
 
 def test():
-  #~ corpus = json.loads(json_test)
   corpus = json.load(open("test_data.json"))
 
   #Wintersemester 2014 (yes, the dh link is correct)
@@ -118,14 +115,14 @@ def test():
   test_normalize()
 
 def test_normalize():
-    title = normalize_title_and_get_lv_form("Algorithmen und Datenstrukturen 1  -\xdcbung Vorlesung")
-    if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
-        print("FAIL!")
-    else:
-        print("SUCCESS!")
-    title = normalize_title_and_get_lv_form(u"Algorithmen und Datenstrukturen 1  - Übung Vorlesung")
-    if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
-        print("FAIL!")
-    else:
-        print("SUCCESS!")
+  title = normalize_title_and_get_lv_form("Algorithmen und Datenstrukturen 1  -\xdcbung Vorlesung")
+  if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
+    print("FAIL!")
+  else:
+    print("SUCCESS!")
+  title = normalize_title_and_get_lv_form(u"Algorithmen und Datenstrukturen 1  - Übung Vorlesung")
+  if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
+    print("FAIL!")
+  else:
+    print("SUCCESS!")
 #~ test()
