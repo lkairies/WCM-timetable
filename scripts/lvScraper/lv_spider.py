@@ -6,7 +6,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.utils.response import get_base_url
 from urlparse import urljoin
 
-from lvScraper.items import CourseItem, LinkingElement
+from items import CourseItem, LinkingElement
 
 class ASVSpider(CrawlSpider):
   name = 'lv'
