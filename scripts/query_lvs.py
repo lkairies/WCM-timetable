@@ -14,7 +14,7 @@ sparql.setQuery("""
     ?unit od:relatedModule ?modul .
     ?unit od:recommendedFor ?sgsemester .
     ?sgsemester od:toStudiengang <http://od.fmi.uni-leipzig.de/studium/Inf.Master> .
-    ?lv rdfs:label ?label .
+    ?lv rdfs:label ?title .
     ?lv od:beginsAt ?start .
     ?lv od:endsAt ?end .
     ?lv od:locatedAt ?location .
