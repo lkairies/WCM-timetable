@@ -110,36 +110,3 @@ def main():
   modulnummer = sys.argv[2]
   json_database_file = sys.argv[3]
   print(find_best_match(title_string, modulnummer, json_load(open(json_database_file))))
-
-def test_lv(title, modulnummer, assert_url, corpus):
-  url = find_best_match(title, modulnummer, corpus)
-  if url == assert_url:
-    print("SUCCESS!")
-  else:
-    print("FAIL!")
-    print(url)
-
-def test():
-  corpus = json.load(open("test_data.json"))
-
-  #Wintersemester 2014 (yes, the dh link is correct)
-  test_lv("Algorithmen und Datenstrukturen 1 Vorlesung", "10-201-2001-1", "http://asv.informatik.uni-leipzig.de/courses/162", corpus)
-  test_lv("Vorlesung Eingebettete Systeme", "10-202-2126", "http://www.informatik.uni-leipzig.de/ti/lehre/aktuellessemester/vorlesung-es.html", corpus)
-  test_lv("Seminar Introduction to Humanities Programming with Python", "10-202-2335", "http://www.dh.uni-leipzig.de/wo/courses/digital-philology-at-the-university-of-leipzig-sommersemester-20132014/", corpus)
-  test_lv("Seminar Mobile Peer-to-Peer-Systeme", "10-202-2124", "http://rvs.informatik.uni-leipzig.de/de/lehre/WS1415/seminare/mp2ps/", corpus)
-  test_lv("Bachelor- und Masterseminar ASV", "10-202-2011", "http://asv.informatik.uni-leipzig.de/courses/159", corpus)
-
-  test_normalize()
-
-def test_normalize():
-  title = normalize_title_and_get_lv_form("Algorithmen und Datenstrukturen 1  -\xdcbung Vorlesung")
-  if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
-    print("FAIL!")
-  else:
-    print("SUCCESS!")
-  title = normalize_title_and_get_lv_form(u"Algorithmen und Datenstrukturen 1  - Übung Vorlesung")
-  if title["title"] != "Algorithmen und Datenstrukturen 1" or title["lv_form"] != u'Übung':
-    print("FAIL!")
-  else:
-    print("SUCCESS!")
-test()
