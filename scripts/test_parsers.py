@@ -6,6 +6,8 @@ import parse_master
 
 test_directory = os.path.dirname(os.path.realpath(__file__))+"/test"
 
+#this urls document should be consistent, because it has an id.
+#newer versions will probably get a different id.
 pdfurl = "http://db.uni-leipzig.de/bekanntmachung/dokudownload.php?dok_id=694"
 pdf_filename = test_directory + "/ma-inf-module.pdf"
 
