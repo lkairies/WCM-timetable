@@ -11,21 +11,34 @@ from lvScraper.items import CourseItem, LinkingElement
 class ASVSpider(CrawlSpider):
   name = 'lv'
   allowed_domains = ['www.informatik.uni-leipzig.de',
+                     'dbs.uni-leipzig.de',
                      'asv.informatik.uni-leipzig.de',
                      'rvs.informatik.uni-leipzig.de',
-                     'www.dh.uni-leipzig.de']
+                     'www.dh.uni-leipzig.de',
+                     'www.bioinf.uni-leipzig.de',
+                     'www.imise.uni-leipzig.de'
+                    ]
 
   start_urls = [
-    'http://asv.informatik.uni-leipzig.de/courses/'
+     'http://asv.informatik.uni-leipzig.de/courses/'
     ,'http://www.informatik.uni-leipzig.de/ti/lehre/aktuellessemester.html'
     ,'http://rvs.informatik.uni-leipzig.de/de/lehre/'
     ,'http://www.dh.uni-leipzig.de/wo/courses/'
+    ,'http://dbs.uni-leipzig.de/de/study'
+    ,'http://www.bioinf.uni-leipzig.de/teaching/currentClasses.html'
+    ,'http://www.imise.uni-leipzig.de/Lehre/MedInf/Aktuelles.jsp'
   ]
 
-  rules = [Rule(LinkExtractor(allow=['asv.informatik.uni-leipzig.de/courses/\d+',
-                                      'www.informatik.uni-leipzig.de/ti/lehre/aktuellessemester/',
-                                      'rvs.informatik.uni-leipzig.de/de/lehre/*/',
-                                      'www.dh.uni-leipzig.de/wo/courses/*/']
+  rules = [Rule(LinkExtractor(allow=['asv.informatik.uni-leipzig.de/courses/\d+'
+                                    ,'www.informatik.uni-leipzig.de/ti/lehre/aktuellessemester/'
+                                    ,'rvs.informatik.uni-leipzig.de/de/lehre/*/'
+                                    ,'www.dh.uni-leipzig.de/wo/courses/*/'
+                                     # todo: generalize semester
+                                    ,'dbs.uni-leipzig.de/(stud/2014ws/|study/ws_2014_15/)'
+                                    ,'http://www.bioinf.uni-leipzig.de/teaching/currentClasses/'
+                                     # semester specific: 'http://www.imise.uni-leipzig.de/Lehre/Semester/2014-15/'
+                                    ,'http://www.imise.uni-leipzig.de/Lehre/Semester/'
+                                    ]
                               ), 'parse_course')]
 
   def parse_start_url(self, response):
