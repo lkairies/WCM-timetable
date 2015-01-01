@@ -48,6 +48,22 @@ def compare_title(title_candidate, title):
   #~ print(result, title_candidate)
   return result
 
+#returns a float value between 0 and 1. (average similarity of links to title)
+def compare_links_to_title(links, title):
+  score = 0.0
+  # this should never happen, but since we divide...
+  if not links:
+    print("ERROR: empty list of links.")
+    return score
+  link_titles = []
+  for link in links:
+    string = lxml.html.tostring(lxml.html.fromstring(link), method="text", encoding='unicode')
+    link_titles.append(normalize_title_and_get_lv_form(string))
+  for link_title in link_titles:
+    score += compare_title(link_title, title)
+  return score / len(links)
+
+#returns a float value between 0 and 1.
 def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
   score = 0.0
 
@@ -59,9 +75,13 @@ def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
   title_candidates.append(webpage['html_title_text'])
   root = lxml.html.fromstring(webpage['html_body'])
   nodes = []
-  for link in webpage["links"]:
-    nodes.append(lxml.html.fromstring(link))
+
+  #this improves results for the current testcases:
+  #~ for link in webpage["links"]:
+    #~ nodes.append(lxml.html.fromstring(link))
+
   for path in title_xpaths:
+    # xpath always returns a list? maybe we should use a single xpath to match all elements.
     nodes += root.xpath(path)
   for node in nodes:
     text = lxml.html.tostring(node, method="text", encoding='unicode')
@@ -71,12 +91,14 @@ def compare_webpage_to_title_and_modul(webpage, title, modulnummer):
     title_candidate = normalize_title_and_get_lv_form(title_candidate)
     scores.append(compare_title(title_candidate, title))
     #~ print(scores[-1], title_candidate)
-  score = score + (0.5 * max(scores))
+  score = score + 0.5 * max(scores)
+
+  score = score + 0.3 * compare_links_to_title(webpage['links'], title)
 
   #increase score if we find the modulnummer in the page
   page_body_text = lxml.html.tostring(root, method="text", encoding='unicode')
   if modulnummer in page_body_text:
-    score += 0.5
+    score += 0.3
   return score
 
 def split_corpus_to_pages_and_links(corpus):
