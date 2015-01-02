@@ -7,5 +7,4 @@ class Lehrveranstaltung < ActiveRecord::Base
    serialize :zeit_bis
    serialize :raum
 
-   enum form: [:seminar, :vorlesung, :praktikum]
 end
