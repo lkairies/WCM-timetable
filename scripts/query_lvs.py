@@ -58,9 +58,14 @@ def getLVs(semester="w14", studiengang="Inf.Master"):
   query += '?sgsemester od:toStudiengang <' + PREFIX_ODS + studiengang + '> .'
   query += """
       ?lv_id rdfs:label ?titel .
-      ?lv_id od:beginsAt ?zeit_von .
-      ?lv_id od:endsAt ?zeit_bis .
-      ?lv_id od:locatedAt ?raum .
+      OPTIONAL {
+        ?lv_id od:beginsAt ?zeit_von .
+        ?lv_id od:endsAt ?zeit_bis .
+      } .
+      OPTIONAL {
+        ?lv_id od:locatedAt ?r .
+        ?r rdfs:label ?raum
+      } .
       ?lv_id od:servedBy ?person .
       ?person foaf:name ?dozent .
       ?lv_id od:dayOfWeek ?wochentag
@@ -79,7 +84,6 @@ def getLVs(semester="w14", studiengang="Inf.Master"):
   newlvs = dict()
   for entry in simplify_result(result):
     entry["modul_id"] = entry["modul_id"].replace(PREFIX_ODS, "")
-    entry["raum"] = entry["raum"].replace(PREFIX_ROOMS, "")
     entry["lv_id"] = entry["lv_id"].replace(PREFIX_HOST + semester +"/", "")
     entry["form"] = entry["form"].replace(PREFIX_OD, "").replace("Uebung", "Übung")
     if (entry["lv_id"],entry["modul_id"]) not in newlvs:
