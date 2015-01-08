@@ -27,6 +27,7 @@ class ASVSpider(CrawlSpider):
     ,'http://dbs.uni-leipzig.de/de/study'
     ,'http://www.bioinf.uni-leipzig.de/teaching/currentClasses.html'
     ,'http://www.imise.uni-leipzig.de/Lehre/MedInf/Aktuelles.jsp'
+    ,'http://www.informatik.uni-leipzig.de/~hlawit/vorlesungen.html'
   ]
 
   rules = [Rule(LinkExtractor(allow=['asv.informatik.uni-leipzig.de/courses/\d+'
@@ -38,6 +39,7 @@ class ASVSpider(CrawlSpider):
                                     ,'http://www.bioinf.uni-leipzig.de/teaching/currentClasses/'
                                      # semester specific: 'http://www.imise.uni-leipzig.de/Lehre/Semester/2014-15/'
                                     ,'http://www.imise.uni-leipzig.de/Lehre/Semester/'
+                                    ,'http://www.informatik.uni-leipzig.de/~hlawit/vorlesungen.html'
                                     ]
                               ), 'parse_course')]
 

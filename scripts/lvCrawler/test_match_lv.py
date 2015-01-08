@@ -25,12 +25,13 @@ def test_precondition_testCrawler():
     return True
 
 def test_lv(title, modulnummer, assert_url, corpus):
-  url = find_best_match(title, modulnummer, corpus)
+  score, url = find_best_match(title, modulnummer, corpus)
+  print(score)
   if url == assert_url:
     print("SUCCESS!")
   else:
-    print("FAIL!")
     print(url)
+    print("FAIL!")
 
 def test():
   test_normalize()
@@ -56,6 +57,7 @@ def test():
   test_lv("Vorlesung Sequenzanalyse und Genomik", "10-202-2207", "http://www.bioinf.uni-leipzig.de/teaching/currentClasses/class188.html", corpus)
   test_lv("Modellierung biologischer und molekularer Systeme - Vorlesung", "10-202-2410", "http://www.imise.uni-leipzig.de/Lehre/Semester/2014-15/MbumS/index.jsp", corpus)
   test_lv("Spezialvorlesung Graphen und Netzwerke in der Biologie", "10-202-2205", "http://www.imise.uni-leipzig.de/Lehre/Semester/2014-15/MbumS/index.jsp", corpus)
+  test_lv("Visualisierung - 2 Vorlesungen", "10-202-2201", "http://www.informatik.uni-leipzig.de/~hlawit/vorlesungen.html", corpus)
 
 def test_normalize():
   print("testing title normalize...")
