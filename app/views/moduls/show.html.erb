@@ -16,26 +16,30 @@
 </div>
 <br />
 <div>
-  Ziele:<br />
+  <h2>Ziele:</h2>
   <%= simple_format(@modul.ziele) %>
 </div>
 <div>
-  Inhalt:<br />
+  <h2>Inhalt:</h2>
   <%= simple_format(@modul.beschreibung) %>
 </div>
 
 <div>
-  Lehrveranstaltungen:<br />
-  <% Lehrveranstaltung.where(modul_id: @modul.nummer).each do |lv| %>
+  <h2>Lehrveranstaltungen:</h2>
+  <% @lvs.each do |lv_titel,lvlist| %>
     <div>
-      <%= lv.titel %><br />
-      <%= lv.dozent %><br />
-      <%= lv.form %><br />
-      <%= lv.wochentag %><br />
-      <%= lv.zeit_von %><br />
-      <%= lv.zeit_bis %><br />
-      <%= lv.raum %><br />
-      <%= lv.weblink %><br />
+      <h3>
+        <%= lvlist[0].form %>:
+        <%= lv_titel %> ( link:
+        <%= lvlist[0].weblink %> )
+      </h3>
+      <% lvlist.each do |lv| %>
+        <%= lv.wochentag %><br />
+        <%= lv.zeit_von %><br />
+        <%= lv.zeit_bis %><br />
+        <%= lv.dozent %><br />
+        <%= lv.raum %><br />
+      <% end %>
     </div><br />
   <% end %>
 </div>

@@ -9,16 +9,18 @@
  </tr>
 
  <% @moduls.each do |modul| %>
-  <tr>
-   <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
-   <td><%= modul.nummer %></td>
-   <td><%= modul.form %></td>
-   <td><%= modul.credits %></td>
-   <td>
-    <% Lehrveranstaltung.where(modul_id: modul.nummer).each do |lv| %>
-     <%= lv.titel %><br />
-    <% end %>
-   </td>
-  </tr>
+  <% if @modul_lvs.has_key?(modul.nummer) %>
+    <tr>
+     <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
+     <td><%= modul.nummer %></td>
+     <td><%= modul.form %></td>
+     <td><%= modul.credits %></td>
+     <td>
+      <% @modul_lvs[modul.nummer].each do |lv_titel| %>
+       <%= lv_titel %><br />
+      <% end %>
+     </td>
+    </tr>
+  <% end %>
  <% end %>
 </table>
