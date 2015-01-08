@@ -18,8 +18,14 @@ modules.each do |mod|
   Modul.create!(mod)
 end
 
-jsonLV = `scripts/query_lvs.py w14 Inf.Master`
-lvs = JSON.parse(jsonLV)
+jsonLVmaster = `scripts/query_lvs.py w14 Inf.Master`
+lvs = JSON.parse(jsonLVmaster)
+lvs.each do |lv|
+  Lehrveranstaltung.create!(lv)
+end
+
+jsonLVbachelor = `scripts/query_lvs.py w14 Inf.Bachelor`
+lvs = JSON.parse(jsonLVbachelor)
 lvs.each do |lv|
   Lehrveranstaltung.create!(lv)
 end
