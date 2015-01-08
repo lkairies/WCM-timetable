@@ -125,7 +125,7 @@ def find_best_match(title_string, modulnummer, corpus):
     urls_score.append( ( compare_webpage_to_title_and_modul(webpage, title_string, modulnummer), webpage['url'] ) )
 
     #~ print("score:",urls_score[-1][0], "\tpage:",urls_score[-1][1])
-  return max(urls_score)[1]
+  return max(urls_score)
 
 def main():
   title_string = sys.argv[1]
