@@ -30,11 +30,11 @@
     <td />
     <td />
    <% end %>
-   <td>
+   <td><ul>
     <% @modul_lvs[modul_nummer].each do |lv_titel| %>
-     <%= lv_titel %><br />
+     <li><%= lv_titel %></li>
     <% end %>
-   </td>
+   </ul></td>
   </tr>
  <% end %>
 
