@@ -18,14 +18,16 @@ modules.each do |mod|
   Modul.create!(mod)
 end
 
-jsonLVmaster = `scripts/query_lvs.py w14 Inf.Master`
-lvs = JSON.parse(jsonLVmaster)
-lvs.each do |lv|
-  Lehrveranstaltung.create!(lv)
+jsonSM = `scripts/query_lvs.py studiengangmodule`
+sgmodule = JSON.parse(jsonSM)
+sgmodule.each do |sm|
+  StudiengangModul.create!(sm)
 end
 
-jsonLVbachelor = `scripts/query_lvs.py w14 Inf.Bachelor`
-lvs = JSON.parse(jsonLVbachelor)
+#todo: autodetect semester based on current date
+semester = "w14"
+jsonLV = `scripts/query_lvs.py lehrveranstaltungen #{semester}`
+lvs = JSON.parse(jsonLV)
 lvs.each do |lv|
   Lehrveranstaltung.create!(lv)
 end

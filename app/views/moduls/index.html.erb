@@ -1,3 +1,10 @@
+<nav><ul>
+ <li><%= link_to "Alle Studiengänge", moduls_path %></li>
+ <% @studiengaenge.each do |sg| %>
+  <li><%= link_to sg, moduls_path("studiengang" => sg) %></li>
+ <% end %>
+</ul></nav>
+
 <h1>Modulübersicht</h1>
 <table class="table table-hover">
  <tr>
@@ -8,19 +15,27 @@
   <th>lehrveranstaltungs</th>
  </tr>
 
- <% @moduls.each do |modul| %>
-  <% if @modul_lvs.has_key?(modul.nummer) %>
-    <tr>
-     <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
-     <td><%= modul.nummer %></td>
-     <td><%= modul.form %></td>
-     <td><%= modul.credits %></td>
-     <td>
-      <% @modul_lvs[modul.nummer].each do |lv_titel| %>
-       <%= lv_titel %><br />
-      <% end %>
-     </td>
-    </tr>
-  <% end %>
+
+
+ <% @modul_lvs.each do |modul_nummer, lvs| %>
+  <tr>
+   <% if @moduls.include?(modul_nummer) %>
+    <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
+    <td><%= modul_nummer %></td>
+    <td><%= @moduls[modul_nummer].form %></td>
+    <td><%= @moduls[modul_nummer].credits %></td>
+   <% else %>
+    <td><%= modul_nummer %></td>
+    <td><%= modul_nummer %></td>
+    <td />
+    <td />
+   <% end %>
+   <td>
+    <% @modul_lvs[modul_nummer].each do |lv_titel| %>
+     <%= lv_titel %><br />
+    <% end %>
+   </td>
+  </tr>
  <% end %>
+
 </table>

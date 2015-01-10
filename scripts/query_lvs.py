@@ -30,6 +30,7 @@ def simplify_result(resultset):
     lvs.append(lv)
   return lvs
 
+# TODO: remove studiengang specifier. just get ALL lvs.
 #returns a list of dicts, each dict represents one lv.
 # uniqueness is guaranteed for the pair (lv, modul)
 #parameter semester has the format
@@ -37,7 +38,7 @@ def simplify_result(resultset):
 #parameter studiengang is can be something like
 # 'Inf.Bachelor', 'Inf.Bio', 'Inf.Master'
 # use getStudiengaenge() for a complete list.
-def getLVs(semester="w14", studiengang="Inf.Master"):
+def getLVs(semester, studiengang="Inf.Master"):
   #this is supposed to transform modul uri to modulnummer, but doesn't work with the virtuoso server
   # BIND ( ?modul_id AS replace(str(?modul), "^http://od.fmi.uni-leipzig.de/studium/", ""))
   query = """
@@ -92,6 +93,21 @@ def getLVs(semester="w14", studiengang="Inf.Master"):
       add_entries(newlvs[(entry["lv_id"],entry["modul_id"])], entry)
   return list(newlvs.values())
 
+def getStudienGangModule():
+  query="""
+  SELECT DISTINCT ?studiengang ?modul_id
+    WHERE
+    {
+      ?sg rdf:type od:Studiengang .
+      ?sg rdfs:label ?studiengang .
+      ?sgsem od:toStudiengang ?sg .
+      ?modul_id od:toStudiengangSemester ?sgsem
+    }
+"""
+  result = simplify_result(query_odfmi(query))
+  for sgmodul in result:
+    sgmodul["modul_id"] = sgmodul["modul_id"].replace(PREFIX_ODS, "")
+  return result
 def getStudienGaenge():
   query= """
   SELECT ?s
@@ -106,14 +122,13 @@ def getStudienGaenge():
     sgList.append(sg["s"].replace(PREFIX_ODS, ""))
   return sgList
 
-#~ print(getLVs("w14", "Inf.Master"))
-#~ print(getStudienGaenge())
-def main(semester, studiengang):
-  print(json.dumps(getLVs(semester, studiengang)))
-
-
 if __name__ == "__main__":
-  if len(sys.argv) == 3:
-    main(sys.argv[1], sys.argv[2])
+  request = sys.argv[1]
+  if request == "studiengangmodule":
+    result = getStudienGangModule()
+  elif request == "lehrveranstaltungen" and len(sys.argv) == 3:
+    result = getLVs(sys.argv[2])
   else:
-    print("ERROR: invalid argument count")
+    print("ERROR: bad parameters", file=sys.stderr)
+    quit(1)
+  print(json.dumps(result))

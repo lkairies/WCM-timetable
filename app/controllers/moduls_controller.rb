@@ -12,10 +12,30 @@ class ModulsController < ApplicationController
     end
   end
 
+  # @studiengaenge is an array of strings
+  # @moduls is a hash with all moduls from the database
+  # @modul_lvs is a hash with a list of lvs for each modul.
+  #  only moduls that are referenced by an lv are included.
+  # keys for the hashes are the modulnummers.
   def index
-    @moduls = Modul.all
+    # TODO: maybe there is a method "to_array"?
+    @studiengaenge = Array.new
+    StudiengangModul.select(:studiengang).distinct.each do |sg|
+      @studiengaenge.push(sg.studiengang)
+    end
+    if params[:studiengang]
+      modnums = StudiengangModul.where( studiengang: params[:studiengang] ).select(:modul_id)
+    else
+      modnums = StudiengangModul.select(:modul_id)
+    end
+    logger.debug "Modnums: #{modnums.inspect}"
+    db_moduls = Modul.where( nummer: modnums )
+    @moduls = Hash.new
+    db_moduls.each do |m|
+      @moduls[m.nummer] = m
+    end
     @modul_lvs = Hash.new
-    Lehrveranstaltung.all.each do |lv|
+    Lehrveranstaltung.where( modul_id: modnums ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
         lvlist = Array.new
         @modul_lvs[lv.modul_id]=lvlist
