@@ -47,7 +47,7 @@ def parse_module(module_string):
     modul['titel_englisch'] = ""
     modul['art_englisch'] = ""
     stream = io.StringIO(module_string)
-    modul['nummer'] = stream.readline().strip()
+    modul['modul_id'] = stream.readline().strip()
     stream.readline()
     modul['form'] = stream.readline().strip()
     seek_to_value_for_key(stream, 'Modultitel')

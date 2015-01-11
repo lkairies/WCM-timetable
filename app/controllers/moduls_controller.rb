@@ -2,10 +2,10 @@ class ModulsController < ApplicationController
   def show
     #todo: automatically detect this!
     current_semester = "w14"
-    @modul = Modul.where(nummer: params[:id]).first
+    @modul = Modul.where(modul_id: params[:id]).first
     #does Hash.new( Array.new ) work? New array as default Hash value.
     @lvs = Hash.new
-    Lehrveranstaltung.where(modul_id: @modul.nummer).where( semester: current_semester ).each do |lv|
+    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: current_semester ).each do |lv|
       unless @lvs.has_key?(lv.titel)
         lvlist = Array.new
         @lvs[lv.titel]=lvlist
@@ -33,10 +33,10 @@ class ModulsController < ApplicationController
       modnums = StudiengangModul.select(:modul_id)
     end
     logger.debug "Modnums: #{modnums.inspect}"
-    db_moduls = Modul.where( nummer: modnums )
+    db_moduls = Modul.where( modul_id: modnums )
     @moduls = Hash.new
     db_moduls.each do |m|
-      @moduls[m.nummer] = m
+      @moduls[m.modul_id] = m
     end
     @modul_lvs = Hash.new
     Lehrveranstaltung.where( modul_id: modnums ).where( semester: current_semester ).each do |lv|

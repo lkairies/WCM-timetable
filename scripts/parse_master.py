@@ -46,7 +46,7 @@ def parse_module(module_string):
     modul = dict()
     modul['studiengang'] = 'master'
     stream = io.StringIO(module_string)
-    modul['nummer'] = stream.readline().strip()
+    modul['modul_id'] = stream.readline().strip()
     stream.readline()
     modul['form'] = stream.readline().strip()
     seek_to_value_for_key(stream, 'Modultitel')
