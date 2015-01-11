@@ -13,7 +13,6 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 PREFIX_HOST = "http://od.fmi.uni-leipzig.de/"
 PREFIX_ODS = PREFIX_HOST+"studium/"
 PREFIX_OD = PREFIX_HOST+"model/"
-PREFIX_ROOMS = PREFIX_HOST+"rooms/"
 
 def query_odfmi(query):
   sparql = SPARQLWrapper("http://pcai003.informatik.uni-leipzig.de:8892/sparql")
@@ -30,15 +29,9 @@ def simplify_result(resultset):
     lvs.append(lv)
   return lvs
 
-# TODO: remove studiengang specifier. just get ALL lvs.
 #returns a list of dicts, each dict represents one lv.
 # uniqueness is guaranteed for the pair (lv, modul)
-#parameter semester has the format
-# (s|w)\d\d
-#parameter studiengang is can be something like
-# 'Inf.Bachelor', 'Inf.Bio', 'Inf.Master'
-# use getStudiengaenge() for a complete list.
-def getLVs(semester, studiengang="Inf.Master"):
+def getLVs():
   #this is supposed to transform modul uri to modulnummer, but doesn't work with the virtuoso server
   # BIND ( ?modul_id AS replace(str(?modul), "^http://od.fmi.uni-leipzig.de/studium/", ""))
   query = """
@@ -46,18 +39,11 @@ def getLVs(semester, studiengang="Inf.Master"):
     WHERE
     {
       ?lv_id rdf:type od:LV .
-  """
-  query += 'FILTER regex(str(?lv_id), "' + PREFIX_HOST + semester + '/") .'
-  query += """
       ?lv_id rdf:type ?form .
       FILTER ( ?form != od:LV ) .
       ?kurs od:containsLV ?lv_id .
       ?unit od:containsKurs ?kurs .
       ?unit od:relatedModule ?modul_id .
-      ?unit od:recommendedFor ?sgsemester .
-  """
-  query += '?sgsemester od:toStudiengang <' + PREFIX_ODS + studiengang + '> .'
-  query += """
       ?lv_id rdfs:label ?titel .
       OPTIONAL {
         ?lv_id od:beginsAt ?zeit_von .
@@ -72,7 +58,6 @@ def getLVs(semester, studiengang="Inf.Master"):
       ?lv_id od:dayOfWeek ?wochentag
     }
   """
-  #~ query += " LIMIT 3"
   result = query_odfmi(query)
 
   # adds e1 and e2, stores result in e1
@@ -85,7 +70,9 @@ def getLVs(semester, studiengang="Inf.Master"):
   newlvs = dict()
   for entry in simplify_result(result):
     entry["modul_id"] = entry["modul_id"].replace(PREFIX_ODS, "")
-    entry["lv_id"] = entry["lv_id"].replace(PREFIX_HOST + semester +"/", "")
+    lv_id = entry["lv_id"].split("/")
+    entry["semester"] = lv_id[-2]
+    entry["lv_id"] = lv_id[-1]
     entry["form"] = entry["form"].replace(PREFIX_OD, "").replace("Uebung", "Übung")
     if (entry["lv_id"],entry["modul_id"]) not in newlvs:
       newlvs[(entry["lv_id"],entry["modul_id"])] = entry
@@ -108,26 +95,13 @@ def getStudienGangModule():
   for sgmodul in result:
     sgmodul["modul_id"] = sgmodul["modul_id"].replace(PREFIX_ODS, "")
   return result
-def getStudienGaenge():
-  query= """
-  SELECT ?s
-  WHERE
-  {
-    ?s rdf:type od:Studiengang
-  }
-  """
-  result = simplify_result(query_odfmi(query))
-  sgList = []
-  for sg in result:
-    sgList.append(sg["s"].replace(PREFIX_ODS, ""))
-  return sgList
 
 if __name__ == "__main__":
   request = sys.argv[1]
   if request == "studiengangmodule":
     result = getStudienGangModule()
-  elif request == "lehrveranstaltungen" and len(sys.argv) == 3:
-    result = getLVs(sys.argv[2])
+  elif request == "lehrveranstaltungen":
+    result = getLVs()
   else:
     print("ERROR: bad parameters", file=sys.stderr)
     quit(1)
