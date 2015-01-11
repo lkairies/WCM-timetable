@@ -1,9 +1,11 @@
 class ModulsController < ApplicationController
   def show
+    #todo: automatically detect this!
+    current_semester = "w14"
     @modul = Modul.where(nummer: params[:id]).first
     #does Hash.new( Array.new ) work? New array as default Hash value.
     @lvs = Hash.new
-    Lehrveranstaltung.where(modul_id: @modul.nummer).each do |lv|
+    Lehrveranstaltung.where(modul_id: @modul.nummer).where( semester: current_semester ).each do |lv|
       unless @lvs.has_key?(lv.titel)
         lvlist = Array.new
         @lvs[lv.titel]=lvlist
@@ -18,6 +20,8 @@ class ModulsController < ApplicationController
   #  only moduls that are referenced by an lv are included.
   # keys for the hashes are the modulnummers.
   def index
+    #todo: automatically detect this!
+    current_semester = "w14"
     # TODO: maybe there is a method "to_array"?
     @studiengaenge = Array.new
     StudiengangModul.select(:studiengang).distinct.each do |sg|
@@ -35,7 +39,7 @@ class ModulsController < ApplicationController
       @moduls[m.nummer] = m
     end
     @modul_lvs = Hash.new
-    Lehrveranstaltung.where( modul_id: modnums ).each do |lv|
+    Lehrveranstaltung.where( modul_id: modnums ).where( semester: current_semester ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
         lvlist = Array.new
         @modul_lvs[lv.modul_id]=lvlist
