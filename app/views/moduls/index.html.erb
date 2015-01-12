@@ -1,7 +1,8 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.5.0/bootstrap-table.min.css">
-<%= stylesheet_link_tag 'bootstrap-table-filter.css' %> 
+<%= stylesheet_link_tag 'bootstrap-table.min.css' %>
+<%= stylesheet_link_tag 'bootstrap-table-filter.css' %>
+
 <h1>Modulübersicht</h1>
 
 <div id="filter-bar"> </div>
@@ -65,6 +66,7 @@
         });
     });
 </script>
-<%=javascript_include_tag 'bootstrap-table-filter.js'%>
-<%=javascript_include_tag 'bs-table.js'%>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.5.0/bootstrap-table.min.js"></script>
+<%= javascript_include_tag 'bootstrap-table.min.js' %>
+<%= javascript_include_tag 'bootstrap-table-filter.min.js' %>
+<%= javascript_include_tag 'bootstrap-table-filter.js' %>
+<%= javascript_include_tag 'bs-table.js' %>
