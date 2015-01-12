@@ -6,27 +6,39 @@
 
 <div id="filter-bar"> </div>
 
-<table class="table table-hover" data-toggle="table" id="module-table" data-toolbar="#filter-bar" data-show-toggle="true" data-show-columns="true" data-show-filter="true">
+<table 
+   class="table table-hover" 
+   data-toggle="table" 
+   data-url="moduls/json"
+   id="module-table" 
+   data-toolbar="#filter-bar"
+   data-show-toggle="true"
+   data-show-refresh="true"
+   data-show-filter="true"
+   data-show-columns="true"
+   >
    <thead>
       <tr>
-         <th data-field="title" data-align="left" data-sortable="true">Titel</th>
-         <th data-field="nummer" data-align="right" data-sortable="true">Nummer</th>
+         <th data-field="titel" data-align="left" data-sortable="true">Titel</th>
+         <th data-field="modul_id" data-align="right" data-sortable="true">Nummer</th>
          <th data-field="credits" data-align="right" data-sortable="true">Credits</th>
          <th data-field="form" data-align="right" data-sortable="true">Form</th>
       </tr>
    </thead>
+<% if false %>
    <tbody>
       <% i = 0 %>
       <% @moduls.each do |modul| %>
          <% i = i+1 %>
          <tr id="tr-id-<%= i %>" class="tr-class-<%= i %>">
-            <td id="td-id-<%= i %>" class="td-class-<%= i %>"><%= link_to modul.titel, modul_path(modul.nummer) %></td>
-            <td><%= modul.nummer %></td>
+            <td id="td-id-<%= i %>" class="td-class-<%= i %>"><%= link_to modul.titel, modul_path(modul.modul_id) %></td>
+            <td><%= modul.modul_id %></td>
             <td><%= modul.credits %></td>
             <td><%= modul.form %></td>           
          </tr>
       <% end %>
    </tbody>  
+<% end %>
 </table>
 
 <script type="text/javascript">
@@ -34,9 +46,9 @@
         $('#filter-bar').bootstrapTableFilter({
             filters:[
                 {
-                    field: 'title',    // field identifier
+                    field: 'titel',    // field identifier
                     label: 'Titel',    // filter label
-                    type: 'search'   // filter type
+                    type: 'select'   // filter type
                 },
                 {
                     field: 'form',
@@ -48,11 +60,11 @@
             connectTo: '#module-table',
             onSubmit: function() {
                 var data = $('#filter-bar').bootstrapTableFilter('getData');
-                console.log(data);
+                console.log(data); 
             }
         });
     });
 </script>
-<%=javascript_include_tag 'bootstrap-table-filter.js'%> 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<%=javascript_include_tag 'bootstrap-table-filter.js'%>
+<%=javascript_include_tag 'bs-table.js'%>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.5.0/bootstrap-table.min.js"></script>

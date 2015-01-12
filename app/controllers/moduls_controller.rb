@@ -9,5 +9,6 @@ class ModulsController < ApplicationController
 
   def json
     @moduls = Modul.all
+    render json: @moduls
   end
 end

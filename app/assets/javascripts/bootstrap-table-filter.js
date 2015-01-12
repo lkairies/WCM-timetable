@@ -542,6 +542,7 @@
     };
 
     BootstrapTableFilter.prototype.toggleRefreshButton = function(show) {
+        this.$refreshButton = this.$toolbar.find('.btn-refresh');
         this.$refreshButton.toggle(show);
     };
 
