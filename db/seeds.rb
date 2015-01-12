@@ -6,13 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-jsonMods = `scripts/query_lvs.py module`
-modules = JSON.parse(jsonMods)
-modules.each do |mod|
-  Modul.create!(mod)
-end
-
-def create_or_update(modul)
+def create_or_update_modul(modul)
   dbmodul = Modul.find_by( modul_id: modul["modul_id"] )
   if dbmodul
     dbmodul.update!(modul)
@@ -21,16 +15,22 @@ def create_or_update(modul)
   end
 end
 
+jsonMods = `scripts/query_lvs.py module`
+modules = JSON.parse(jsonMods)
+modules.each do |mod|
+  create_or_update_modul(mod)
+end
+
 jsonmaster = `scripts/parse_master.py`
 modules = JSON.parse(jsonmaster)
 modules.each do |mod|
-  create_or_update(mod)
+  create_or_update_modul(mod)
 end
 
 jsonbachelor = `scripts/parse_bachelor.py`
 modules = JSON.parse(jsonbachelor)
 modules.each do |mod|
-  create_or_update(mod)
+  create_or_update_modul(mod)
 end
 
 jsonSM = `scripts/query_lvs.py studiengangmodule`
