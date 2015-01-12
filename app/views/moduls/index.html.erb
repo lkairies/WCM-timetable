@@ -1,24 +1,58 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.5.0/bootstrap-table.min.css">
+<%= stylesheet_link_tag 'bootstrap-table-filter.css' %> 
 <h1>Modulübersicht</h1>
-<table class="table table-hover">
- <tr>
-  <th>Titel</th>
-  <th>Nummer</th>
-  <th>form</th>
-  <th>credits</th>
-  <th>lehrveranstaltungs</th>
- </tr>
 
- <% @moduls.each do |modul| %>
-  <tr>
-   <td><%= link_to modul.titel, modul_path(modul.nummer) %></td>
-   <td><%= modul.nummer %></td>
-   <td><%= modul.form %></td>
-   <td><%= modul.credits %></td>
-   <td>
-    <% Lehrveranstaltung.where(modul_id: modul.nummer).each do |lv| %>
-     <%= lv.titel %><br />
-    <% end %>
-   </td>
-  </tr>
- <% end %>
+<div id="filter-bar"> </div>
+
+<table class="table table-hover" data-toggle="table" id="module-table" data-toolbar="#filter-bar" data-show-toggle="true" data-show-columns="true" data-show-filter="true">
+   <thead>
+      <tr>
+         <th data-field="title" data-align="left" data-sortable="true">Titel</th>
+         <th data-field="nummer" data-align="right" data-sortable="true">Nummer</th>
+         <th data-field="credits" data-align="right" data-sortable="true">Credits</th>
+         <th data-field="form" data-align="right" data-sortable="true">Form</th>
+      </tr>
+   </thead>
+   <tbody>
+      <% i = 0 %>
+      <% @moduls.each do |modul| %>
+         <% i = i+1 %>
+         <tr id="tr-id-<%= i %>" class="tr-class-<%= i %>">
+            <td id="td-id-<%= i %>" class="td-class-<%= i %>"><%= link_to modul.titel, modul_path(modul.nummer) %></td>
+            <td><%= modul.nummer %></td>
+            <td><%= modul.credits %></td>
+            <td><%= modul.form %></td>           
+         </tr>
+      <% end %>
+   </tbody>  
 </table>
+
+<script type="text/javascript">
+    $(function() {
+        $('#filter-bar').bootstrapTableFilter({
+            filters:[
+                {
+                    field: 'title',    // field identifier
+                    label: 'Titel',    // filter label
+                    type: 'search'   // filter type
+                },
+                {
+                    field: 'form',
+                    label: 'Form',
+                    type: 'search',
+                    enabled: true   // filter is visible by default
+                }
+            ],
+            connectTo: '#module-table',
+            onSubmit: function() {
+                var data = $('#filter-bar').bootstrapTableFilter('getData');
+                console.log(data);
+            }
+        });
+    });
+</script>
+<%=javascript_include_tag 'bootstrap-table-filter.js'%> 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.5.0/bootstrap-table.min.js"></script>

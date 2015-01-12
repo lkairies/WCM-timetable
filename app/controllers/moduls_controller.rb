@@ -6,4 +6,8 @@ class ModulsController < ApplicationController
   def index
     @moduls = Modul.all
   end
+
+  def json
+    @moduls = Modul.all
+  end
 end

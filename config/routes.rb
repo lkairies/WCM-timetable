@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
-  get 'lehrveranstaltungs/show'
+#  get 'lehrveranstaltungs/show'
   
-  get 'moduls/show'
+#  get 'moduls/show'
 
-  get 'moduls/list'
-
+#  get 'moduls/list'
+   get 'moduls/json'
   resources :moduls , only: [:show, :index] do
      resources :lehrveranstaltungs, only: [:show]
   end
