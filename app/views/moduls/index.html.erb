@@ -1,9 +1,4 @@
-<nav><ul>
- <li><%= link_to "Alle Studiengänge", moduls_path %></li>
- <% @studiengaenge.each do |sg| %>
-  <li><%= link_to sg, moduls_path("studiengang" => sg) %></li>
- <% end %>
-</ul></nav>
+<%= render 'form' %>
 
 <h1>Modulübersicht</h1>
 <table class="table table-hover">
