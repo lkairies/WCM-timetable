@@ -1,16 +1,23 @@
 class ModulsController < ApplicationController
   ALL_SG_STRING = "Alle Studiengänge"
+  #TODO: get semesters from the database
+  AVAILABLE_SEMESTERS = [ "s14", "w14", "s15" ]
   def selected_semester
-    return "w14"
+    if params[:semester]
+      return params[:semester]
+    else
+      #TODO: autodetect based on current date
+      return "w14"
+    end
   end
 
   def show
     #todo: automatically detect this!
-    semester = selected_semester()
+    @selected_sem = selected_semester()
     @modul = Modul.where(modul_id: params[:id]).first
     #does Hash.new( Array.new ) work? New array as default Hash value.
     @lvs = Hash.new
-    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: semester ).each do |lv|
+    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: @selected_sem ).each do |lv|
       unless @lvs.has_key?(lv.titel)
         lvlist = Array.new
         @lvs[lv.titel]=lvlist
@@ -25,8 +32,8 @@ class ModulsController < ApplicationController
   #  only moduls that are referenced by an lv are included.
   # keys for the hashes are the modulnummers.
   def index
-    #todo: automatically detect this!
-    semester = selected_semester
+    @semesters = AVAILABLE_SEMESTERS
+    @selected_sem = selected_semester()
     # TODO: maybe there is a method "to_array"?
     @studiengaenge = Array.new
     @studiengaenge.push(ALL_SG_STRING)
@@ -47,7 +54,7 @@ class ModulsController < ApplicationController
       @moduls[m.modul_id] = m
     end
     @modul_lvs = Hash.new
-    Lehrveranstaltung.where( modul_id: modnums ).where( semester: semester ).each do |lv|
+    Lehrveranstaltung.where( modul_id: modnums ).where( semester: @selected_sem ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
         lvlist = Hash.new
         @modul_lvs[lv.modul_id]=lvlist
