@@ -1,6 +1,6 @@
 <%= form_tag("moduls", method:"get") do %>
   <p>
-    <%= select_tag( :studiengang, options_for_select(@studiengaenge) ) %>
+    <%= select_tag( :studiengang, options_for_select(@studiengaenge, selected=@selected_sg) ) %>
     <%= submit_tag "Anzeigen!" %>
   </p>
 <% end %>

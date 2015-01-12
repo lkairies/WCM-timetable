@@ -1,11 +1,16 @@
 class ModulsController < ApplicationController
+  ALL_SG_STRING = "Alle Studiengänge"
+  def selected_semester
+    return "w14"
+  end
+
   def show
     #todo: automatically detect this!
-    current_semester = "w14"
+    semester = selected_semester()
     @modul = Modul.where(modul_id: params[:id]).first
     #does Hash.new( Array.new ) work? New array as default Hash value.
     @lvs = Hash.new
-    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: current_semester ).each do |lv|
+    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: semester ).each do |lv|
       unless @lvs.has_key?(lv.titel)
         lvlist = Array.new
         @lvs[lv.titel]=lvlist
@@ -21,16 +26,19 @@ class ModulsController < ApplicationController
   # keys for the hashes are the modulnummers.
   def index
     #todo: automatically detect this!
-    current_semester = "w14"
+    semester = selected_semester
     # TODO: maybe there is a method "to_array"?
     @studiengaenge = Array.new
+    @studiengaenge.push(ALL_SG_STRING)
     StudiengangModul.select(:studiengang).distinct.each do |sg|
       @studiengaenge.push(sg.studiengang)
     end
-    if params[:studiengang]
+    if params[:studiengang] and params[:studiengang] != ALL_SG_STRING
       modnums = StudiengangModul.where( studiengang: params[:studiengang] ).select(:modul_id)
+      @selected_sg = params[:studiengang]
     else
       modnums = StudiengangModul.select(:modul_id)
+      @selected_sg = ALL_SG_STRING
     end
     logger.debug "Modnums: #{modnums.inspect}"
     db_moduls = Modul.where( modul_id: modnums )
@@ -39,7 +47,7 @@ class ModulsController < ApplicationController
       @moduls[m.modul_id] = m
     end
     @modul_lvs = Hash.new
-    Lehrveranstaltung.where( modul_id: modnums ).where( semester: current_semester ).each do |lv|
+    Lehrveranstaltung.where( modul_id: modnums ).where( semester: semester ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
         lvlist = Hash.new
         @modul_lvs[lv.modul_id]=lvlist
