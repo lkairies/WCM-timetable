@@ -1,0 +1,2 @@
+class WochenplanController < ApplicationController
+end
