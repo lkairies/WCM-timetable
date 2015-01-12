@@ -62,7 +62,7 @@ def getLVs():
 
   # adds e1 and e2, stores result in e1
   def add_entries(e1, e2):
-    if e1["dozent"] != e2["dozent"]:
+    if e2["dozent"] not in e1["dozent"]:
       e1["dozent"] = e1["dozent"] + ";" + e2["dozent"]
 
   #use a dictionary to find duplicate (lv, modul) entries
