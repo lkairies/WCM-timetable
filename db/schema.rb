@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150111124344) do
+ActiveRecord::Schema.define(version: 20150112125050) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 20150111124344) do
     t.text     "literaturangabe"
     t.text     "vergabe_von_lp"
     t.text     "pruefungsleistungen"
+    t.text     "sws"
   end
 
   create_table "studiengang_moduls", force: true do |t|

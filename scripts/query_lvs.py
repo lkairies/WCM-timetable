@@ -96,12 +96,41 @@ def getStudienGangModule():
     sgmodul["modul_id"] = sgmodul["modul_id"].replace(PREFIX_ODS, "")
   return result
 
+def getModule():
+  query="""
+  SELECT DISTINCT ?modul_id ?sws ?titel
+    WHERE
+    {
+      ?modul_id rdf:type od:Module .
+      OPTIONAL { ?modul_id od:contains ?sws } .
+      ?modul_id rdfs:label ?titel
+    }
+"""
+
+  # adds e1 and e2, stores result in e1
+  def add_entries(e1, e2):
+    if e1["sws"] != e2["sws"]:
+      e1["sws"] = e1["sws"] + "\n" + e2["sws"]
+
+  result = simplify_result(query_odfmi(query))
+  newmoduls = dict()
+  for sgmodul in result:
+    modul_id = sgmodul["modul_id"].replace(PREFIX_ODS, "")
+    sgmodul["modul_id"] = modul_id
+    if modul_id not in newmoduls:
+      newmoduls[modul_id] = sgmodul
+    else:
+      add_entries(newmoduls[modul_id], sgmodul)
+  return list(newmoduls.values())
+
 if __name__ == "__main__":
   request = sys.argv[1]
   if request == "studiengangmodule":
     result = getStudienGangModule()
   elif request == "lehrveranstaltungen":
     result = getLVs()
+  elif request == "module":
+    result = getModule()
   else:
     print("ERROR: bad parameters", file=sys.stderr)
     quit(1)
