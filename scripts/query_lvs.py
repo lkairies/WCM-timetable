@@ -47,7 +47,7 @@ def getLVs():
       ?lv_id rdfs:label ?titel .
       OPTIONAL {
         ?lv_id od:beginsAt ?zeit_von .
-        ?lv_id od:endsAt ?zeit_bis .
+        ?lv_id od:endsAt ?zeit_bis
       } .
       OPTIONAL {
         ?lv_id od:locatedAt ?r .
