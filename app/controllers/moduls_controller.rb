@@ -41,11 +41,12 @@ class ModulsController < ApplicationController
     @modul_lvs = Hash.new
     Lehrveranstaltung.where( modul_id: modnums ).where( semester: current_semester ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
-        lvlist = Array.new
+        lvlist = Hash.new
         @modul_lvs[lv.modul_id]=lvlist
       end
-      unless @modul_lvs[lv.modul_id].include?(lv.titel)
-        @modul_lvs[lv.modul_id].push(lv.titel)
+      unless @modul_lvs[lv.modul_id].has_key?(lv.titel)
+        #TODO: this will only reference the first lv, if there are multiple lvs with the same name.
+        @modul_lvs[lv.modul_id][lv.titel] = lv.lv_id
       end
     end
   end

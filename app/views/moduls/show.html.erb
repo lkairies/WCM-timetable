@@ -34,11 +34,13 @@
         <%= lvlist[0].weblink %> )
       </h3>
       <% lvlist.each do |lv| %>
-        <%= lv.wochentag %><br />
-        <%= lv.zeit_von %><br />
-        <%= lv.zeit_bis %><br />
-        <%= lv.dozent %><br />
-        <%= lv.raum %><br />
+        <div lvid="<%= lv.lv_id %>">
+          <%= lv.wochentag %><br />
+          <%= lv.zeit_von %><br />
+          <%= lv.zeit_bis %><br />
+          <%= lv.dozent %><br />
+          <%= lv.raum %><br />
+        </div>
       <% end %>
     </div><br />
   <% end %>
