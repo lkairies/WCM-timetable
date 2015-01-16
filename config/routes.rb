@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'wochenplan' => 'wochenplan#index'
+
   get 'lehrveranstaltungs/show'
   
   get 'moduls/show'
