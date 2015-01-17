@@ -1,9 +1,9 @@
 require 'icalendar'
 require 'date'
 class WochenplanController < ApplicationController
-  def get_vorlesungstage(beginDate, endDate)
+  def get_vorlesungstage(semester_begin, semester_end)
 
-    vorlesungstage = Array(0..(endDate-beginDate))
+    vorlesungstage = Array(0..(semester_end-semester_begin))
     logger.debug "vorlesungstage (roh): #{vorlesungstage}"
 
 
@@ -15,14 +15,14 @@ class WochenplanController < ApplicationController
         logger.debug "break: #{str}"
         if str.include? " bis "
           dates = str.split(" bis ")
-          beginBreak = Date.parse(dates[0])
-          endBreak = Date.parse(dates[1])+1 # add one because the end of break date is included in the break
-          logger.debug "from #{beginBreak}   to #{endBreak}   -   length: #{endBreak-beginBreak}"
-          vorlesungstage -= Array((beginBreak-beginDate).to_i..(endBreak-beginDate).to_i)
+          break_begin = Date.parse(dates[0])
+          break_end = Date.parse(dates[1])+1 # add one because the end of break date is included in the break
+          logger.debug "from #{break_begin}   to #{break_end}   -   length: #{break_end-break_begin}"
+          vorlesungstage -= Array((break_begin-semester_begin).to_i..(break_end-semester_begin).to_i)
         else
-          breakDate = Date.parse(str)
-          logger.debug "at: #{breakDate}"
-          vorlesungstage -= [(breakDate-beginDate).to_i]
+          break_date = Date.parse(str)
+          logger.debug "at: #{break_date}"
+          vorlesungstage -= [(break_date-semester_begin).to_i]
         end
       end
     end
@@ -36,8 +36,8 @@ class WochenplanController < ApplicationController
     unless lv[:zeit_von]
       return events
     end
-    beginDate = Date.parse("2014-10-13")
-    endDate = Date.parse("2015-02-07")
+    semester_begin = Date.parse("2014-10-13")
+    semester_end = Date.parse("2015-02-07")
 
     #TODO: decode pattern:
     # 11./12.01.2014 (Blockveranstaltung)
@@ -88,9 +88,9 @@ class WochenplanController < ApplicationController
 
     logger.debug "dozent: #{lv[:dozent]}"
 
-    get_vorlesungstage(beginDate, endDate).each do |day|
-      if doubleweek[(day+beginDate.wday)%14]
-        date = beginDate + day
+    get_vorlesungstage(semester_begin, semester_end).each do |day|
+      if doubleweek[(day+semester_begin.wday)%14]
+        date = semester_begin + day
         event = Icalendar::Event.new
         event.dtstart = DateTime.new(date.year, date.month, date.day, start_hours, start_minutes)
         event.dtend = DateTime.new(date.year, date.month, date.day, end_hours, end_minutes)
@@ -98,10 +98,10 @@ class WochenplanController < ApplicationController
         event.location = lv[:raum]
         # organizer field requires an email address (https://www.ietf.org/rfc/rfc2445.txt)
         #event.organizer = lv[:dozent]
-        event.description = "Titel: #{lv[:titel]}. "+
-          "Dozent(en): #{lv[:dozent].split(";")}. "+
-          "Lehrform: #{lv[:form]}. "+
-          "Modul: #{lv[:modul_id]}. "+
+        event.description = "Titel: #{lv[:titel]}\n\n"+
+          "Dozent(en): #{lv[:dozent].split(";")}\n\n"+
+          "Lehrform: #{lv[:form]}\n\n"+
+          "Modul: #{lv[:modul_id]}\n\n"+
           "Terminregel: #{lv[:wochentag]}"
 
         events.push(event)
@@ -114,6 +114,8 @@ class WochenplanController < ApplicationController
 
 
   def index
+
+
     @icalendar = Icalendar::Calendar.new
     url_lvs = params[:lvs]
     #~ semester = params[:semester]
@@ -127,5 +129,15 @@ class WochenplanController < ApplicationController
         @icalendar.add_event(e)
       end
     end
+    @icalendar.publish
+
+
+    respond_to do |wants|
+      wants.ics do
+        render :text => @icalendar.to_ical
+      end
+      wants.html
+    end
+
   end
 end
