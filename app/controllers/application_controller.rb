@@ -10,4 +10,5 @@ class ApplicationController < ActionController::Base
       return "w14"
     end
   end
+  helper_method :selected_semester
 end

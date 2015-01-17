@@ -4,12 +4,10 @@ class ModulsController < ApplicationController
   AVAILABLE_SEMESTERS = [ "s14", "w14", "s15" ]
 
   def show
-    #todo: automatically detect this!
-    @selected_sem = selected_semester()
     @modul = Modul.where(modul_id: params[:id]).first
     #does Hash.new( Array.new ) work? New array as default Hash value.
     @lvs = Hash.new
-    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: @selected_sem ).each do |lv|
+    Lehrveranstaltung.where(modul_id: @modul.modul_id).where( semester: selected_semester ).each do |lv|
       unless @lvs.has_key?(lv.titel)
         lvlist = Array.new
         @lvs[lv.titel]=lvlist
@@ -25,7 +23,6 @@ class ModulsController < ApplicationController
   # keys for the hashes are the modulnummers.
   def index
     @semesters = AVAILABLE_SEMESTERS
-    @selected_sem = selected_semester()
     # TODO: maybe there is a method "to_array"?
     @studiengaenge = Array.new
     @studiengaenge.push(ALL_SG_STRING)
@@ -46,7 +43,7 @@ class ModulsController < ApplicationController
       @moduls[m.modul_id] = m
     end
     @modul_lvs = Hash.new
-    Lehrveranstaltung.where( modul_id: modnums ).where( semester: @selected_sem ).each do |lv|
+    Lehrveranstaltung.where( modul_id: modnums ).where( semester: selected_semester ).each do |lv|
       unless @modul_lvs.has_key?(lv.modul_id)
         lvlist = Hash.new
         @modul_lvs[lv.modul_id]=lvlist

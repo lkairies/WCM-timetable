@@ -118,12 +118,11 @@ class WochenplanController < ApplicationController
 
     @icalendar = Icalendar::Calendar.new
     url_lvs = params[:lvs]
-    #~ semester = params[:semester]
     logger.debug "lvs: #{url_lvs.inspect}"
     array = url_lvs.split(",")
     logger.debug "decoded: #{array.inspect}"
     array.each do |lv_id|
-      lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: params[:semester]).first
+      lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
       logger.debug "selected: #{lv.inspect}"
       get_lv_events(lv).each do |e|
         @icalendar.add_event(e)
