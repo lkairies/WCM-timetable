@@ -1,0 +1,15 @@
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+      <li><%= link_to("Module", moduls_path( :semester => params[:semester])) %></li>
+      <li>
+        <%= form_tag("/wochenplan", method:"get", :id => 'wochenplan_form', :class => "navbar-form navbar-left") do %>
+            <%= hidden_field_tag(:semester, @selected_sem) %>
+            <%= hidden_field_tag(:lvs) %>
+            <%= submit_tag("Wochenplan", :class => "btn btn-default") %>
+        <% end %>
+      </li>
+    </ul>
+  </div>
+</nav>
