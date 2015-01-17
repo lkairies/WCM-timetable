@@ -7,17 +7,24 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<div class="container">
-   <div class="row">
-      <ul class="nav nav-pills">
-         <li>Module</li>
-         <li>Wochenplan</li>
-     </ul>
-   </div>
-   <div class="row">
+  <nav class="navbar navbar-default">
+       <div class="container-fluid">
+          <ul class="nav navbar-nav">
+             <li><%= link_to("Module", moduls_path( :semester => params[:semester])) %></li>
+             <li>
+               <%= form_tag("wochenplan", method:"get", :id => 'wochenplan_form', :class => "navbar-form navbar-left") do %>
+                   <%= hidden_field_tag(:semester, @selected_sem) %>
+                   <%= hidden_field_tag(:lvs) %>
+                   <%= submit_tag("Wochenplan", :class => "btn btn-default") %>
+               <% end %>
+             </li>
+         </ul>
+       </div>
+   </nav>
+  <div class="container">
+    <div class="row">
       <%= yield %>
-   </div>
-</div>
-
+    </div>
+  </div>
 </body>
 </html>
