@@ -2,14 +2,6 @@ class ModulsController < ApplicationController
   ALL_SG_STRING = "Alle Studiengänge"
   #TODO: get semesters from the database
   AVAILABLE_SEMESTERS = [ "s14", "w14", "s15" ]
-  def selected_semester
-    if params[:semester]
-      return params[:semester]
-    else
-      #TODO: autodetect based on current date
-      return "w14"
-    end
-  end
 
   def show
     #todo: automatically detect this!
