@@ -20,7 +20,6 @@ $ ->
       selected_lvs[lvid] = "true"
       $(this).attr("lvselected", "true")
     localStorage["selected_lvs"] = JSON.stringify(selected_lvs);
-    updatelink()
 
 $ ->
   if localStorage["selected_lvs"]
@@ -30,14 +29,3 @@ $ ->
   else
     selected_lvs = { };
     localStorage["selected_lvs"] = JSON.stringify(selected_lvs);
-  updatelink()
-
-updatelink = ->
-  if localStorage["selected_lvs"]
-    selected_lvs = JSON.parse(localStorage["selected_lvs"]);
-    lvs = []
-    for lv, selected of selected_lvs
-      if selected
-        lvs.push(lv)
-    lvs = lvs.join(",")
-    $("#lvs").prop("value", lvs)
