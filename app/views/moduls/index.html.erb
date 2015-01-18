@@ -1,17 +1,20 @@
 
+<%= stylesheet_link_tag "//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css" %>
+
 <h1>Modulübersicht</h1>
 <%= render 'form' %>
-<table class="table table-hover">
+<table id="module-table" class="table table-hover">
+ <thead>
  <tr>
   <th>Titel</th>
   <th>Nummer</th>
-  <th>form</th>
-  <th>credits</th>
-  <th>lehrveranstaltungs</th>
+  <th>Form</th>
+  <th>Credits</th>
+  <th>Lehrveranstaltungen</th>
  </tr>
+ </thead>
 
-
-
+ <tbody>
  <% @modul_lvs.each do |modul_nummer, lvs| %>
   <tr>
    <% if @moduls.include?(modul_nummer) %>
@@ -34,5 +37,16 @@
    </ul></td>
   </tr>
  <% end %>
-
+ </tbody>
 </table>
+
+<script type=text/javascript>
+   var ready;
+   ready = function() {
+      $('#module-table').DataTable();
+   };
+   $(document).ready(ready);
+   $(document).on('page:load', ready);
+</script>
+
+<%= javascript_include_tag "//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" %>
