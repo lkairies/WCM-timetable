@@ -1,0 +1,37 @@
+
+<% @lvs.each do |lv_titel,lvlist| %>
+    <div class="row">
+       <div class="col-md-12">
+          <h3>
+             <%= lvlist[0].form %>:
+             <%= lv_titel %> ( link:
+             <%= lvlist[0].weblink %> )
+          </h3>
+       </div>
+
+       <div class="col-md-12"> 
+          <table class="table table-bordered">
+             <thead>
+                <tr>
+                   <th>Wochentag</th>
+                   <th>Begin</th>
+                   <th>Ende</th>
+                   <th>Raum</th>
+                   <th>Dozent</th>
+                </tr>
+             </thead>
+             <tbody>      
+                <% lvlist.each do |lv| %>
+                   <tr lvid="<%= lv.lv_id %>">
+                      <td><%= lv.wochentag %></td>
+                      <td><%= lv.zeit_von %></td>
+                      <td><%= lv.zeit_bis %></td>
+                      <td><%= lv.raum %></td>
+                      <td><%= lv.dozent %></td>
+                   </tr>
+                <% end %>
+             </tbody>
+          </table>
+       </div>
+    </div>
+<% end %>
