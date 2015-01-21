@@ -4,7 +4,7 @@ class WochenplanController < ApplicationController
   def get_vorlesungstage(semester_begin, semester_end)
 
     vorlesungstage = Array(0..(semester_end-semester_begin))
-    logger.debug "vorlesungstage (roh): #{vorlesungstage}"
+    #logger.debug "vorlesungstage (roh): #{vorlesungstage}"
 
 
     #TODO: filter events by free days: https://www.zv.uni-leipzig.de/studium/studienorganisation/akademisches-jahr.html
@@ -12,21 +12,21 @@ class WochenplanController < ApplicationController
 
     vorlesungsfrei.each do |str|
       if str.include? "vorlesungsfrei"
-        logger.debug "break: #{str}"
+        #logger.debug "break: #{str}"
         if str.include? " bis "
           dates = str.split(" bis ")
           break_begin = Date.parse(dates[0])
           break_end = Date.parse(dates[1])+1 # add one because the end of break date is included in the break
-          logger.debug "from #{break_begin}   to #{break_end}   -   length: #{break_end-break_begin}"
+          #logger.debug "from #{break_begin}   to #{break_end}   -   length: #{break_end-break_begin}"
           vorlesungstage -= Array((break_begin-semester_begin).to_i..(break_end-semester_begin).to_i)
         else
           break_date = Date.parse(str)
-          logger.debug "at: #{break_date}"
+          #logger.debug "at: #{break_date}"
           vorlesungstage -= [(break_date-semester_begin).to_i]
         end
       end
     end
-    logger.debug "vorlesungstage (reduziert): #{vorlesungstage}"
+    #logger.debug "vorlesungstage (reduziert): #{vorlesungstage}"
     return vorlesungstage
 
   end
@@ -54,7 +54,7 @@ class WochenplanController < ApplicationController
     # ruby Date.wday begins the week at sunday
     weekdays = {1 => "montags", 2 => "dienstags", 3 => "mittwochs", 4 => "donnerstags", 5 => "freitags", 6 => "samstags" }
     wd = lv["wochentag"]
-    logger.debug "weekday: #{wd}"
+    #logger.debug "weekday: #{wd}"
     doubleweek = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
     if wd.include? "täglich"
       doubleweek = [false, true, true, true, true, true, true, false, true, true, true, true, true, true]
@@ -86,7 +86,7 @@ class WochenplanController < ApplicationController
     end_hours = lv_end[0].to_i
     end_minutes = lv_end[1].to_i
 
-    logger.debug "dozent: #{lv[:dozent]}"
+    #logger.debug "dozent: #{lv[:dozent]}"
 
     get_vorlesungstage(semester_begin, semester_end).each do |day|
       if doubleweek[(day+semester_begin.wday)%14]
@@ -112,31 +112,80 @@ class WochenplanController < ApplicationController
 
   end
 
+  private def get_lvs
+    lvs = []
+    if params[:lvs]
+      #logger.debug "lvs: #{params[:lvs].inspect}"
+      lvs = params[:lvs].split(",")
+    end
+    return lvs
+  end
 
-  def index
+  private def generate_ics
+    @icalendar = Icalendar::Calendar.new
+    get_lvs.each do |lv_id|
+      lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
+      #logger.debug "selected: #{lv.inspect}"
+      get_lv_events(lv).each do |e|
+        @icalendar.add_event(e)
+      end
+    end
+  end
 
+  private def render_ics
+    generate_ics
+    @icalendar.publish
+    @icalendar.to_ical
+  end
 
+  private def render_json
+    events = []
+    get_lvs.each do |lv_id|
+      lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
+      #logger.debug "selected: #{lv.inspect}"
+      get_lv_events(lv).each do |ical_event|
+        event = {}
+        event["id"] = ical_event.uid
+        event["title"] = ical_event.summary
+        event["start"] = ical_event.dtstart
+        event["end"] = ical_event.dtend
+        events.push(event)
+      end
+    end
+    result = { :events => events }
+    logger.debug "result: #{result}"
+    return result
+  end
+
+  private def render_html
+    params[:start_date] = '2014-10-13'
+    @host = request.host
     @icalendar = Icalendar::Calendar.new
     url_lvs = params[:lvs]
-    logger.debug "lvs: #{url_lvs.inspect}"
+    #logger.debug "lvs: #{url_lvs.inspect}"
     array = url_lvs.split(",")
-    logger.debug "decoded: #{array.inspect}"
+    #logger.debug "decoded: #{array.inspect}"
     array.each do |lv_id|
       lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
-      logger.debug "selected: #{lv.inspect}"
+      #logger.debug "selected: #{lv.inspect}"
       get_lv_events(lv).each do |e|
         @icalendar.add_event(e)
       end
     end
     @icalendar.publish
+  end
 
-
-    respond_to do |wants|
-      wants.ics do
-        render :text => @icalendar.to_ical
+  def index
+    respond_to do |format|
+      format.json do
+        render :json => render_json
       end
-      wants.html
+      format.ics do
+        render :text => render_ics
+      end
+      format.html do
+        render_html
+      end
     end
-
   end
 end
