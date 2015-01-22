@@ -1,2 +1,6 @@
 <h1>Wochenplan</h1>
-<div><%= simple_format @icalendar.to_ical %></div>
+<p>Download as:
+    <%= link_to "JSON", params.merge(:format => :json), :class => "json-data" %>
+    , <%= link_to "ICS", params.merge(:format => :ics), :class => "ics-data" %>
+</p>
+<%= render 'weekcalendar' %>
