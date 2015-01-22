@@ -15,4 +15,7 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require bootstrap-sprockets
+//= require jquery-ui
+//= require jquery-migrate
+//= require jquery-week-calendar
 //= require_tree .
