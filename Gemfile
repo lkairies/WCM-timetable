@@ -16,6 +16,10 @@ gem 'coffee-rails', '~> 4.0.0'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
+# required for jquery-week-calendar:
+gem 'jquery-migrate-rails'
+gem 'jquery-ui-rails'
+gem 'datejs-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 # jquery.turbolinks fixes jquery functions to behave like jquery without turbolinks
