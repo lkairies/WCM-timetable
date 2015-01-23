@@ -43,6 +43,9 @@
       timeslotsPerHour: 4,
       timeslotHeight: 30,
       hourLine: true,
+      use24Hour: true,
+      businessHours: {start: 6, end: 22, limitDisplay: true},
+      readonly: true,
       data: $('#calendar-data-json').attr('href'),
       height: function($calendar) {
         return $(window).height();
