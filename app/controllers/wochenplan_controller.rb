@@ -105,7 +105,7 @@ class WochenplanController < ApplicationController
         event.dtend = DateTime.parse(lvend.to_s)
         event.summary = lv["titel"]
         event.location = lv[:raum]
-        # organizer field requires an email address (https://www.ietf.org/rfc/rfc2445.txt)
+        # organizer field requires an uri (can be an email address) (https://tools.ietf.org/html/rfc5545#section-3.3.3)
         #event.organizer = lv[:dozent]
         event.description = "Titel: #{lv[:titel]}\n\n"+
           "Dozent(en): #{lv[:dozent].split(";")}\n\n"+
