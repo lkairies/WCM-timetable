@@ -39,6 +39,9 @@ gem 'autoprefixer-rails'
 # iCalendar gem
 gem 'icalendar'
 
+# tzinfo handles proper dst for our data
+gem 'tzinfo'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
