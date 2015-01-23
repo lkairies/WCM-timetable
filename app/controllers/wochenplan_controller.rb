@@ -1,5 +1,6 @@
 require 'icalendar'
 require 'date'
+require 'tzinfo'
 class WochenplanController < ApplicationController
   def get_vorlesungstage(semester_begin, semester_end)
 
@@ -88,12 +89,20 @@ class WochenplanController < ApplicationController
 
     #logger.debug "dozent: #{lv[:dozent]}"
 
+    #TODO: use a configurable parameter for this:
+    lv_time_zone = TZInfo::Timezone.get('Europe/Berlin')
+
     get_vorlesungstage(semester_begin, semester_end).each do |day|
       if doubleweek[(day+semester_begin.wday)%14]
         date = semester_begin + day
         event = Icalendar::Event.new
-        event.dtstart = DateTime.new(date.year, date.month, date.day, start_hours, start_minutes)
-        event.dtend = DateTime.new(date.year, date.month, date.day, end_hours, end_minutes)
+
+        # the naming of time functions is very confusing, please read the documentation of tzinfo
+        lvstart = lv_time_zone.local_to_utc(Time.utc(date.year, date.month, date.day, start_hours, start_minutes))
+        lvend = lv_time_zone.local_to_utc(Time.utc(date.year, date.month, date.day, end_hours, end_minutes))
+
+        event.dtstart = DateTime.parse(lvstart.to_s)
+        event.dtend = DateTime.parse(lvend.to_s)
         event.summary = lv["titel"]
         event.location = lv[:raum]
         # organizer field requires an email address (https://www.ietf.org/rfc/rfc2445.txt)
@@ -153,7 +162,6 @@ class WochenplanController < ApplicationController
       end
     end
     result = { :events => events }
-    logger.debug "result: #{result}"
     return result
   end
 
