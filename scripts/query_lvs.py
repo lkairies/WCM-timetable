@@ -74,7 +74,7 @@ def getLVs():
     lv_id = entry["lv_id"].split("/")
     entry["semester"] = lv_id[-2]
     entry["lv_id"] = lv_id[-1]
-    entry["form"] = entry["form"].replace(PREFIX_OD, "").replace("Uebung", "Übung")
+    entry["form"] = entry["form"].replace(PREFIX_OD, "")
     if (entry["lv_id"],entry["modul_id"]) not in newlvs:
       newlvs[(entry["lv_id"],entry["modul_id"])] = entry
     else:
