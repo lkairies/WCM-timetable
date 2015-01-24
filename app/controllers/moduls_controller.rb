@@ -1,7 +1,15 @@
 class ModulsController < ApplicationController
   ALL_SG_STRING = "Alle Studiengänge"
-  #TODO: get semesters from the database
-  AVAILABLE_SEMESTERS = [ "s14", "w14", "s15" ]
+
+  private def available_semesters
+    available_semesters = []
+    Semester.all.each do |semester|
+      if Lehrveranstaltung.find_by(semester: semester.semester_id)
+        available_semesters.push(semester.semester_id)
+      end
+    end
+    return available_semesters
+  end
 
   def show
     @modul = Modul.where(modul_id: params[:id]).first
@@ -22,7 +30,7 @@ class ModulsController < ApplicationController
   #  only moduls that are referenced by an lv are included.
   # keys for the hashes are the modulnummers.
   def index
-    @semesters = AVAILABLE_SEMESTERS
+    @semesters = available_semesters
     # TODO: maybe there is a method "to_array"?
     @studiengaenge = Array.new
     @studiengaenge.push(ALL_SG_STRING)
