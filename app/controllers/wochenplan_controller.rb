@@ -136,8 +136,6 @@ class WochenplanController < ApplicationController
   end
 
   private def render_html
-    params[:start_date] = '2014-10-13'
-    @host = request.host
     @icalendar = Icalendar::Calendar.new
     url_lvs = params[:lvs]
     #logger.debug "lvs: #{url_lvs.inspect}"
