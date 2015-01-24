@@ -1,15 +1,16 @@
 
 <% @lvs.each do |lv_titel,lvlist| %>
-    <div class="row">
-       <div class="col-md-12">
+    <%= content_tag :div, class: ["row"].push(lvlist[0].form) do -%>
+      <%= content_tag :div, class: ["col-md-12"] do -%>
           <h3>
-             <%= lvlist[0].form %>:
-             <%= lv_titel %> ( link:
-             <%= lvlist[0].weblink %> )
+            <%= lv_titel %>
+            <% if lvlist[0].weblink %>
+              (link:<%= lvlist[0].weblink %>)
+            <% end %>
           </h3>
-       </div>
+      <% end -%>
 
-       <div class="col-md-12"> 
+      <div class="col-md-12">
           <table class="table table-bordered">
              <thead>
                 <tr>
@@ -34,6 +35,6 @@
                 <% end %>
              </tbody>
           </table>
-       </div>
-    </div>
+      </div>
+    <% end -%>
 <% end %>
