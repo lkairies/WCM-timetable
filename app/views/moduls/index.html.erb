@@ -42,9 +42,11 @@
 <script type=text/javascript>
    var ready;
    ready = function() {
-      $('#module-table').DataTable({
-         paging: false
-   });
+       if ( !$.fn.dataTable.isDataTable( '#module-table' ) ) {
+           table = $('#module-table').DataTable( {
+               paging: false
+           } );
+       }
    };
    $(document).ready(ready);
    $(document).on('page:load', ready);
