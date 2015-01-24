@@ -1,5 +1,22 @@
+<%= content_for :head do %>
+    <%= stylesheet_link_tag "//cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css" %>
+    <script type=text/javascript>
+        var ready;
+        ready = function() {
+            if ( !$.fn.dataTable.isDataTable( '#module-table' ) ) {
+                table = $('#module-table').DataTable( {
+                    paging: false
+                } );
+            }
+        };
+        $(document).ready(ready);
+        $(document).on('page:load', ready);
+    </script>
 
-<%= stylesheet_link_tag "//cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css" %>
+    <%= javascript_include_tag "//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" %>
+    <%= javascript_include_tag "//cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js" %>
+<% end %>
+
 <h1>Modulübersicht</h1>
 <%= render 'form' %>
 <table id="module-table" class="table table-striped table-bordered">
@@ -38,19 +55,3 @@
  <% end %>
  </tbody>
 </table>
-
-<script type=text/javascript>
-   var ready;
-   ready = function() {
-       if ( !$.fn.dataTable.isDataTable( '#module-table' ) ) {
-           table = $('#module-table').DataTable( {
-               paging: false
-           } );
-       }
-   };
-   $(document).ready(ready);
-   $(document).on('page:load', ready);
-</script>
-
-<%= javascript_include_tag "//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" %>
-<%= javascript_include_tag "//cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js" %>
