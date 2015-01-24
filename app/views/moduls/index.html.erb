@@ -35,7 +35,7 @@
   <tr>
    <% if @moduls.include?(modul_nummer) %>
     <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
-    <td><%= modul_nummer %></td>
+    <td class="modul_nummer"><%= modul_nummer %></td>
     <td><%= @moduls[modul_nummer].form %></td>
     <td><%= @moduls[modul_nummer].credits %></td>
    <% else %>
