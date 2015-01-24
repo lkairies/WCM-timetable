@@ -20,14 +20,16 @@
                    <th>Dozent</th>
                 </tr>
              </thead>
-             <tbody>      
+             <tbody>
                 <% lvlist.each do |lv| %>
                    <tr lvid="<%= lv.lv_id %>">
                       <td><%= lv.wochentag %></td>
                       <td><%= lv.zeit_von %></td>
                       <td><%= lv.zeit_bis %></td>
                       <td><%= lv.raum %></td>
-                      <td><%= lv.dozent %></td>
+                      <td><ul><% lv.dozent.each do |d| %>
+                        <li><%= d %></li>
+                      <% end %></ul></td>
                    </tr>
                 <% end %>
              </tbody>

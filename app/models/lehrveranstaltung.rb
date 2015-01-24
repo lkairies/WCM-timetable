@@ -6,5 +6,6 @@ class Lehrveranstaltung < ActiveRecord::Base
    serialize :zeit_von
    serialize :zeit_bis
    serialize :raum
+   serialize :dozent
 
 end

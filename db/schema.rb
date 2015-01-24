@@ -11,11 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150123204516) do
+ActiveRecord::Schema.define(version: 20150124001453) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
-    t.string   "dozent"
+    t.text     "dozent"
     t.string   "form"
     t.text     "wochentag"
     t.text     "zeit_von"
