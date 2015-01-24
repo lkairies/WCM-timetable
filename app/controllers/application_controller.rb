@@ -6,8 +6,13 @@ class ApplicationController < ActionController::Base
     if params[:semester]
       return params[:semester]
     else
-      #TODO: autodetect based on current date
-      return "w14"
+      require 'date'
+      today = Date.today
+      Semester.all.each do |semester|
+        if semester[:begin] < today and today < semester[:end]
+          return semester[:semester_id]
+        end
+      end
     end
   end
   helper_method :selected_semester
