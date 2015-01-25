@@ -19,4 +19,6 @@
 //= require jquery-ui
 //= require date
 //= require jquery.weekcalendar
+//= require datatables/jquery_datatables
+//= require dataTables.bootstrap
 //= require_tree .

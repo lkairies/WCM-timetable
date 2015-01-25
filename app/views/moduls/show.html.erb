@@ -1,47 +1,41 @@
+<div class="container">
+   <div class="row">    
+      <div class="col-md-12">
+          <h1><%= @modul.titel %> (<%= @modul.modul_id %>)</h1>
+      </div>
+   </div>
 
-<h1><%= @modul.titel %> (<%= @modul.modul_id %>)</h1>
-<div id="container">
- <div id="lp">
-  <%= @modul.credits %> Leistungspunkte
- </div>
- <div id="form">
-  <%= @modul.form %>
- </div>
- <div id="art">
-  <%= @modul.art %>
- </div>
- <div id="turnus">
-  <%= @modul.semesterturnus %>
- </div>
-</div>
-<br />
-<div>
-  <h2>Ziele:</h2>
-  <%= simple_format(@modul.ziele) %>
-</div>
-<div>
-  <h2>Inhalt:</h2>
-  <%= simple_format(@modul.beschreibung) %>
-</div>
+   <div class="row" >
+      <div class="col-md-3 modul-overview">
+         <%= @modul.credits %> &#8203; Leistungspunkte
+      </div>
+      <div class="col-md-3 modul-overview">
+         <%= @modul.form %> &#8203;
+      </div>
+      <div class="col-md-3 modul-overview">
+         <%= @modul.art %> &#8203;
+      </div>
+      <div class="col-md-3 modul-overview">
+          <%= @modul.semesterturnus %> &#8203;
+      </div>
+   </div>
 
-<div>
-  <h2>Lehrveranstaltungen:</h2>
-  <% @lvs.each do |lv_titel,lvlist| %>
-    <div>
-      <h3>
-        <%= lvlist[0].form %>:
-        <%= lv_titel %> ( link:
-        <%= lvlist[0].weblink %> )
-      </h3>
-      <% lvlist.each do |lv| %>
-        <div lvid="<%= lv.lv_id %>">
-          <%= lv.wochentag %><br />
-          <%= lv.zeit_von %><br />
-          <%= lv.zeit_bis %><br />
-          <%= lv.dozent %><br />
-          <%= lv.raum %><br />
-        </div>
-      <% end %>
-    </div><br />
-  <% end %>
+   <div class="row">
+      <div class="col-md-12">
+         <h2>Ziele:</h2>
+         <%= simple_format(@modul.ziele) %>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <h2>Inhalt:</h2>
+         <%= simple_format(@modul.beschreibung) %>
+      </div>
+   </div>
+  <div class="row">
+     <div class="col-md-12">
+        <h2>Lehrveranstaltungen:</h2>
+     </div>
+  </div>
+  <%= render "lvs" %>
 </div>

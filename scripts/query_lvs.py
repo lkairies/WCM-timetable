@@ -62,18 +62,19 @@ def getLVs():
 
   # adds e1 and e2, stores result in e1
   def add_entries(e1, e2):
-    if e2["dozent"] not in e1["dozent"]:
-      e1["dozent"] = e1["dozent"] + ";" + e2["dozent"]
+    if e2["dozent"][0] not in e1["dozent"]:
+      e1["dozent"].append(e2["dozent"][0])
 
   #use a dictionary to find duplicate (lv, modul) entries
   #when we find duplicates, add them together.
   newlvs = dict()
   for entry in simplify_result(result):
+    entry["dozent"] = [entry["dozent"]]
     entry["modul_id"] = entry["modul_id"].replace(PREFIX_ODS, "")
     lv_id = entry["lv_id"].split("/")
     entry["semester"] = lv_id[-2]
-    entry["lv_id"] = lv_id[-1]
-    entry["form"] = entry["form"].replace(PREFIX_OD, "").replace("Uebung", "Übung")
+    entry["lv_id"] = lv_id[-2] + "." + lv_id[-1]
+    entry["form"] = entry["form"].replace(PREFIX_OD, "")
     if (entry["lv_id"],entry["modul_id"]) not in newlvs:
       newlvs[(entry["lv_id"],entry["modul_id"])] = entry
     else:

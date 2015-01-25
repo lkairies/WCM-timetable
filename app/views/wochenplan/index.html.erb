@@ -1,7 +1,14 @@
 <h1>Wochenplan</h1>
-<p>Download as:
-    <%= link_to "JSON", params.merge(:format => :json), :class => "json-data" %>
-    , <%= link_to "ICS", params.merge(:format => :ics), :class => "ics-data" %>
+<p>
+  Download as
+  <%= link_to params.merge(:format => :json), :id => "calendar-data-json" do %>
+    <span class="glyphicon glyphicon-wrench">JSON</span>
+  <% end %>
+</p>
+<p>
+  Download as
+  <%= link_to params.merge(:format => :ics), :id => "calendar-data-ics" do %>
+    <span class="glyphicon glyphicon-calendar">ICS</span>
+  <% end %>
 </p>
 <%= render 'weekcalendar' %>
-<div><%= simple_format @icalendar.to_ical %></div>

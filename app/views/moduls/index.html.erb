@@ -1,9 +1,6 @@
-
-<%= stylesheet_link_tag "//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css" %>
-
 <h1>Modulübersicht</h1>
 <%= render 'form' %>
-<table id="module-table" class="table table-hover">
+<%= content_tag :table, id: "module-table", class: ["table", "table-striped", "table-bordered"], :data => {semester: selected_semester} do -%>
  <thead>
  <tr>
   <th>Titel</th>
@@ -19,7 +16,7 @@
   <tr>
    <% if @moduls.include?(modul_nummer) %>
     <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
-    <td><%= modul_nummer %></td>
+    <td class="modul_nummer"><%= modul_nummer %></td>
     <td><%= @moduls[modul_nummer].form %></td>
     <td><%= @moduls[modul_nummer].credits %></td>
    <% else %>
@@ -30,23 +27,12 @@
    <% end %>
    <td><ul>
     <% @modul_lvs[modul_nummer].each do |lv_titel, lv_id| %>
-     <li lvid="<%= lv_id %>">
+     <%= content_tag :li, :data => {lvid: lv_id } do -%>
       <%= lv_titel %>
-     </li>
+     <% end -%>
     <% end %>
    </ul></td>
   </tr>
  <% end %>
  </tbody>
-</table>
-
-<script type=text/javascript>
-   var ready;
-   ready = function() {
-      $('#module-table').DataTable();
-   };
-   $(document).ready(ready);
-   $(document).on('page:load', ready);
-</script>
-
-<%= javascript_include_tag "//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" %>
+<% end -%>

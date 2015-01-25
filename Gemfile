@@ -20,6 +20,8 @@ gem 'jquery-rails'
 gem 'jquery-migrate-rails'
 gem 'jquery-ui-rails'
 gem 'datejs-rails'
+# Datatables
+gem 'datatables-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 # jquery.turbolinks fixes jquery functions to behave like jquery without turbolinks
@@ -38,6 +40,9 @@ gem 'autoprefixer-rails'
 
 # iCalendar gem
 gem 'icalendar'
+
+# tzinfo handles proper dst for our data
+gem 'tzinfo'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

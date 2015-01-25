@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150112125050) do
+ActiveRecord::Schema.define(version: 20150124023346) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
-    t.string   "dozent"
-    t.string   "form"
+    t.text     "dozent"
+    t.integer  "form"
     t.text     "wochentag"
     t.text     "zeit_von"
     t.text     "zeit_bis"
@@ -53,6 +53,17 @@ ActiveRecord::Schema.define(version: 20150112125050) do
     t.text     "vergabe_von_lp"
     t.text     "pruefungsleistungen"
     t.text     "sws"
+  end
+
+  create_table "semesters", force: true do |t|
+    t.string   "semester_id"
+    t.date     "begin"
+    t.date     "end"
+    t.date     "lvbegin"
+    t.date     "lvend"
+    t.text     "vorlesungstage"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "studiengang_moduls", force: true do |t|

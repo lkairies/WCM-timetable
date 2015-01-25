@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  semester_id: MyString
+  begin: 2015-01-23
+  end: 2015-01-23
+  lvbegin: 2015-01-23
+  lvend: 2015-01-23
+  vorlesungsfrei: 
+
+two:
+  semester_id: MyString
+  begin: 2015-01-23
+  end: 2015-01-23
+  lvbegin: 2015-01-23
+  lvend: 2015-01-23
+  vorlesungsfrei: 
