@@ -61,32 +61,39 @@ def create_or_update_modul(modul)
   end
 end
 
-jsonMods = `scripts/query_lvs.py module`
-modules = JSON.parse(jsonMods)
+json_moduls = `scripts/query_lvs.py module`
+modules = JSON.parse(json_moduls)
 modules.each do |mod|
   create_or_update_modul(mod)
 end
 
-jsonmaster = `scripts/parse_master.py`
+case Rails.env
+when "production"
+  jsonmaster = `scripts/parse_master.py -c`
+  jsonbachelor = `scripts/parse_bachelor.py -c`
+else
+  jsonmaster = `scripts/parse_master.py`
+  jsonbachelor = `scripts/parse_bachelor.py`
+end
+
 modules = JSON.parse(jsonmaster)
 modules.each do |mod|
   create_or_update_modul(mod)
 end
 
-jsonbachelor = `scripts/parse_bachelor.py`
 modules = JSON.parse(jsonbachelor)
 modules.each do |mod|
   create_or_update_modul(mod)
 end
 
-jsonSM = `scripts/query_lvs.py studiengangmodule`
-sgmodule = JSON.parse(jsonSM)
+json_studiengangmodule = `scripts/query_lvs.py studiengangmodule`
+sgmodule = JSON.parse(json_studiengangmodule)
 sgmodule.each do |sm|
   StudiengangModul.create!(sm)
 end
 
-jsonLV = `scripts/query_lvs.py lehrveranstaltungen`
-lvs = JSON.parse(jsonLV)
+json_lehrveranstaltungen = `scripts/query_lvs.py lehrveranstaltungen`
+lvs = JSON.parse(json_lehrveranstaltungen)
 lvs.each do |lv|
   Lehrveranstaltung.create!(lv)
 end
