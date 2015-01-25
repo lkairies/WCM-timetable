@@ -32,3 +32,10 @@ $ ->
   for semester, selected_semester_lvs of JSON.parse(localStorage["selected_lvs"])
     for lvid, value of selected_semester_lvs
       $("[lvid='"+lvid+"']").attr("lvselected", "true")
+
+$ ->
+  if $.fn.dataTable
+    if !$.fn.dataTable.isDataTable( '#module-table' )
+      $('#module-table').DataTable( {
+        paging: false
+      } )
