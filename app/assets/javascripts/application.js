@@ -18,4 +18,5 @@
 //= require jquery-ui
 //= require jquery-migrate
 //= require jquery-week-calendar
+//= require dataTables.bootstrap
 //= require_tree .

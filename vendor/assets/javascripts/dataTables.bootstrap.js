@@ -1,0 +1,1 @@
+../../DataTables-Plugins/integration/bootstrap/3/dataTables.bootstrap.js
