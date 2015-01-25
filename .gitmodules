@@ -1,0 +1,3 @@
+[submodule "vendor/DataTables-Plugins"]
+	path = vendor/DataTables-Plugins
+	url = git@github.com:DataTables/Plugins.git
