@@ -6,8 +6,8 @@ $ ->
     $(this).submit();
 
 $ ->
-  $("[lvid]").click (e) ->
-    lvid = $(this).attr("lvid")
+  $("[data-lvid]").click (e) ->
+    lvid = $(this).data("lvid")
     semester = $(this).closest('[data-semester]').data('semester')
     lvStorageKey = "selected_lvs"
     if localStorage[lvStorageKey]
@@ -31,7 +31,7 @@ $ ->
 $ ->
   for semester, selected_semester_lvs of JSON.parse(localStorage["selected_lvs"])
     for lvid, value of selected_semester_lvs
-      $("[lvid='"+lvid+"']").attr("lvselected", "true")
+      $("[data-lvid='"+lvid+"']").attr("lvselected", "true")
 
 $ ->
   if $.fn.dataTable

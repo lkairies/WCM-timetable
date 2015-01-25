@@ -27,9 +27,9 @@
    <% end %>
    <td><ul>
     <% @modul_lvs[modul_nummer].each do |lv_titel, lv_id| %>
-     <li lvid="<%= lv_id %>">
+     <%= content_tag :li, :data => {lvid: lv_id } do -%>
       <%= lv_titel %>
-     </li>
+     <% end -%>
     <% end %>
    </ul></td>
   </tr>

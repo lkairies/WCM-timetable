@@ -23,7 +23,7 @@
              </thead>
              <tbody>
                 <% lvlist.each do |lv| %>
-                   <tr lvid="<%= lv.lv_id %>">
+                  <%= content_tag :tr, :data => {lvid: lv_id } do -%>
                       <td><%= lv.wochentag %></td>
                       <td><%= lv.zeit_von %></td>
                       <td><%= lv.zeit_bis %></td>
@@ -31,7 +31,7 @@
                       <td><ul><% lv.dozent.each do |d| %>
                         <li><%= d %></li>
                       <% end %></ul></td>
-                   </tr>
+                   <% end -%>
                 <% end %>
              </tbody>
           </table>
