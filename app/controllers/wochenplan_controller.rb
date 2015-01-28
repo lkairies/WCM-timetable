@@ -3,6 +3,9 @@ require 'date'
 require 'tzinfo'
 class WochenplanController < ApplicationController
 
+  LV_TIME_ZONE_STRING = 'Europe/Berlin'
+  LV_TIME_ZONE = TZInfo::Timezone.get(LV_TIME_ZONE_STRING)
+
   def get_lv_events(lv)
     events = Array.new
     unless lv[:zeit_von]
@@ -60,19 +63,24 @@ class WochenplanController < ApplicationController
     #logger.debug "dozent: #{lv[:dozent]}"
 
     #TODO: use a configurable parameter for this:
-    lv_time_zone = TZInfo::Timezone.get('Europe/Berlin')
 
     semester[:vorlesungstage].each do |day|
-      if doubleweek[(day+semester.begin.wday)%14]
-        date = semester.begin + day
+      if doubleweek[(day+semester.lvbegin.wday)%14]
+        date = semester.lvbegin + day
         event = Icalendar::Event.new
 
         # the naming of time functions is very confusing, please read the documentation of tzinfo
-        lvstart = lv_time_zone.local_to_utc(Time.utc(date.year, date.month, date.day, start_hours, start_minutes))
-        lvend = lv_time_zone.local_to_utc(Time.utc(date.year, date.month, date.day, end_hours, end_minutes))
-
-        event.dtstart = DateTime.parse(lvstart.to_s)
-        event.dtend = DateTime.parse(lvend.to_s)
+        #lvstart = LV_TIME_ZONE.local_to_utc(Time.utc(date.year, date.month, date.day, start_hours, start_minutes))
+        #logger.debug "lvstart #{lvstart.to_s}"
+        #dtstart = DateTime.parse(lvstart.to_s)
+        dtstart = DateTime.new(year=date.year, month=date.month, day=date.day, hours=start_hours, minutes=start_minutes)
+        event.dtstart = Icalendar::Values::DateTime.new dtstart, 'tzid' => LV_TIME_ZONE_STRING
+        logger.debug "dtstart :: #{dtstart} :: #{dtstart.inspect} :: #{dtstart.to_s}"
+        logger.debug "e.dtstart: #{event.dtstart.inspect}"
+        dtend = DateTime.new(year=date.year, month=date.month, day=date.day, hours=end_hours, minutes=end_minutes)
+        #lvend = LV_TIME_ZONE.local_to_utc(Time.utc(date.year, date.month, date.day, end_hours, end_minutes))
+        #dtend = DateTime.parse(lvend.to_s)
+        event.dtend = Icalendar::Values::DateTime.new dtend, 'tzid' => LV_TIME_ZONE_STRING
         event.summary = lv["titel"]
         event.location = lv[:raum]
         # organizer field requires an uri (can be an email address) (https://tools.ietf.org/html/rfc5545#section-3.3.3)
@@ -101,7 +109,11 @@ class WochenplanController < ApplicationController
   end
 
   private def generate_ics
+    require 'icalendar/tzinfo'
     @icalendar = Icalendar::Calendar.new
+    timezone = LV_TIME_ZONE.ical_timezone DateTime.now
+    @icalendar.add_timezone timezone
+
     get_lvs.each do |lv_id|
       lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
       #logger.debug "selected: #{lv.inspect}"
@@ -149,6 +161,7 @@ class WochenplanController < ApplicationController
       end
     end
     @icalendar.publish
+    @semester = Semester.find_by(semester_id: selected_semester)
   end
 
   def index
