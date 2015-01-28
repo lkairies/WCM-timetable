@@ -258,7 +258,7 @@ table.wc-time-slots {
 
 .free-busy-free{}
 .free-busy-busy{
-  background:url("assets/images/ui-bg_flat_0_aaaaaa_40x100.png") repeat scroll 50% 50% #666666;
+  background:url("ui-bg_flat_0_aaaaaa_40x100.png") repeat scroll 50% 50% #666666;
 }
 
 /** hourLine */
