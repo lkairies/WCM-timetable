@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   protected def selected_semester
-    if params[:semester]
+    if params[:semester] and params[:semester] != ''
       return params[:semester]
     else
       require 'date'
