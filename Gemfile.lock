@@ -40,9 +40,9 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.8.0)
-    datejs-rails (2.0.1)
     datatables-rails (1.10.3.0)
       railties (>= 3.1)
+    datejs-rails (2.0.1)
     erubis (2.7.0)
     execjs (2.2.2)
     hike (1.2.3)
@@ -125,8 +125,8 @@ DEPENDENCIES
   autoprefixer-rails
   bootstrap-sass (~> 3.2.0)
   coffee-rails (~> 4.0.0)
-  datejs-rails
   datatables-rails
+  datejs-rails
   icalendar
   jbuilder (~> 2.0)
   jquery-migrate-rails
