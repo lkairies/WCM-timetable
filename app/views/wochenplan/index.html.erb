@@ -1,14 +1,16 @@
-<h1>Wochenplan</h1>
-<p>
-  Download as
-  <%= link_to params.merge(:format => :json), :id => "calendar-data-json" do %>
-    <span class="glyphicon glyphicon-wrench">JSON</span>
-  <% end %>
-</p>
-<p>
-  Download as
-  <%= link_to params.merge(:format => :ics), :id => "calendar-data-ics" do %>
-    <span class="glyphicon glyphicon-calendar">ICS</span>
-  <% end %>
-</p>
+<%= content_for :navbar do %>
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <%= link_to params.merge(:format => :json), :id => "calendar-data-json" do %>
+          <span class="glyphicon glyphicon-wrench">JSON</span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to params.merge(:format => :ics), :id => "calendar-data-ics" do %>
+          <span class="glyphicon glyphicon-calendar">ICS</span>
+        <% end %>
+      </li>
+    </ul>
+<% end %>
+
 <%= render 'weekcalendar' %>
