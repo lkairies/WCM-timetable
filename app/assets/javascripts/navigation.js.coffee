@@ -1,6 +1,6 @@
 $ ->
-  $("#wochenplan_form").submit ->
-    semester = $('#wochenplan_form').find('#semester').attr('value')
+  $(".wochenplan_form").submit ->
+    semester = $(this).find('#semester').attr('value')
     if localStorage["selected_lvs"]
       selected_semester_lvs = JSON.parse(localStorage["selected_lvs"])[semester];
       lvs = []

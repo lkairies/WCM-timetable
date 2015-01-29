@@ -4,12 +4,23 @@
     <ul class="nav navbar-nav">
       <li><%= link_to("Module", moduls_path( :semester => selected_semester)) %></li>
       <li>
-        <%= form_tag("/wochenplan", method:"get", :id => 'wochenplan_form', :class => "navbar-form navbar-left") do %>
+        <%= form_tag("/wochenplan", method:"get", :class => ["wochenplan_form", "navbar-form", "navbar-left"]) do %>
             <%= hidden_field_tag(:semester, selected_semester) %>
             <%= hidden_field_tag(:lvs) %>
             <%= submit_tag("Wochenplan", :class => "btn btn-default") %>
         <% end %>
+        <!--<%= form_tag("/wochenplan.ics", method:"get", :class => ["wochenplan_form", "navbar-form", "navbar-left"]) do %>-->
+            <!--<%= hidden_field_tag(:semester, selected_semester) %>-->
+            <!--<%= hidden_field_tag(:lvs) %>-->
+            <!--<%= submit_tag("Wochenplan ICS", :class => "btn btn-default") %>-->
+        <!--<% end %>-->
+        <!--<%= form_tag("/wochenplan.json", method:"get", :class => ["wochenplan_form", "navbar-form", "navbar-left"]) do %>-->
+            <!--<%= hidden_field_tag(:semester, selected_semester) %>-->
+            <!--<%= hidden_field_tag(:lvs) %>-->
+            <!--<%= submit_tag("Wochenplan JSON", :class => "btn btn-default") %>-->
+        <!--<% end %>-->
       </li>
     </ul>
+    <%= yield :navbar %>
   </div>
 </nav>
