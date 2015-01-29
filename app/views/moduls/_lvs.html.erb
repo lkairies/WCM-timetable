@@ -1,6 +1,6 @@
 
 <% @lvs.each do |lv_titel,lvlist| %>
-    <%= content_tag :div, class: ["row"].push(lvlist[0].form) do -%>
+    <%= content_tag :div, class: ["row"].push(lvlist[0].form), :data => { :semester => selected_semester } do -%>
       <%= content_tag :div, class: ["col-md-12"] do -%>
           <h3>
             <%= lv_titel %>
@@ -23,7 +23,7 @@
              </thead>
              <tbody>
                 <% lvlist.each do |lv| %>
-                  <%= content_tag :tr, :data => {lvid: lv_id } do -%>
+                  <%= content_tag :tr, :data => {lvid: lv.lv_id } do -%>
                       <td><%= lv.wochentag %></td>
                       <td><%= lv.zeit_von %></td>
                       <td><%= lv.zeit_bis %></td>
