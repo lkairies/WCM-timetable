@@ -21,17 +21,17 @@ $ ->
 
     if selected_lvs[semester][lvid] and selected_lvs[semester][lvid] is true
       delete selected_lvs[semester][lvid]
-      $(this).attr("lvselected", "false")
+      $(this).removeClass("lvselected")
     else
       selected_lvs[semester][lvid] = true
-      $(this).attr("lvselected", "true")
+      $(this).addClass("lvselected")
     localStorage[lvStorageKey] = JSON.stringify(selected_lvs);
 
 # initialize selected lvs on page load
 $ ->
   for semester, selected_semester_lvs of JSON.parse(localStorage["selected_lvs"])
     for lvid, value of selected_semester_lvs
-      $("[data-lvid='"+lvid+"']").attr("lvselected", "true")
+      $("[data-lvid='"+lvid+"']").addClass("lvselected")
 
 $ ->
   if $.fn.dataTable
