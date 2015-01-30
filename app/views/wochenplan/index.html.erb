@@ -12,7 +12,7 @@
                 longDays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
                 minDate: $('#calendar-data').data('semester_begin'),
                 maxDate: $('#calendar-data').data('semester_end'),
-                businessHours: {start: 6, end: 22, limitDisplay: true},
+                businessHours: {start: 7, end: 22, limitDisplay: true},
                 firstDayOfWeek: 1,
                 dateFormat: "d.m.Y",// "M d, Y",
                 readonly: true,
@@ -28,7 +28,6 @@
                 }
             });
         });
-
     </script>
 <% end %>
 
@@ -44,7 +43,7 @@
             <span class="glyphicon glyphicon-calendar">ICS</span>
         <% end %>
       </li>
-      <li><%= link_to "https://support.google.com/calendar/answer/37100?hl=en", :target => "_blank" do%>(Anleitung)<% end %></li>
+      <li><%= link_to "https://support.google.com/calendar/answer/37100?hl=de", :target => "_blank" do%>(Anleitung)<% end %></li>
     </ul>
 <% end %>
 
