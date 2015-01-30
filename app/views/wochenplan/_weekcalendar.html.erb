@@ -65,7 +65,7 @@
       readonly: true,
       data: $('#calendar-data-json').attr('href'),
       height: function($calendar) {
-        return 1600;//$(window).height();
+        return $(window).height() - 51;
       },
       eventRender : function(calEvent, $event) {
         if (calEvent.end.getTime() < new Date().getTime()) {
