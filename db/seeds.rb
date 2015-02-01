@@ -30,14 +30,14 @@ semesters.each do |semester|
   db_semester.lvbegin = Date.parse(lvtime[0])
   db_semester.lvend = Date.parse(lvtime[1])
 
-  vorlesungstage = Array(0..(1+(db_semester.lvend-db_semester.lvbegin)))
+  vorlesungstage = Array(0..(db_semester.lvend-db_semester.lvbegin))
   semester.each do |key, str|
     if str.include? "vorlesungsfrei"
       #logger.debug "break: #{str}"
       if str.include? " bis "
         dates = str.split(" bis ")
         break_begin = Date.parse(dates[0])
-        break_end = Date.parse(dates[1])+1 # add one because the end of break date is included in the break
+        break_end = Date.parse(dates[1])
         vorlesungstage -= Array((break_begin-db_semester.lvbegin).to_i..(break_end-db_semester.lvbegin).to_i)
       else
         break_date = Date.parse(str)
