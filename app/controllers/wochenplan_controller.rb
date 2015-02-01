@@ -29,25 +29,24 @@ class WochenplanController < ApplicationController
     weekdays = {1 => "montags", 2 => "dienstags", 3 => "mittwochs", 4 => "donnerstags", 5 => "freitags", 6 => "samstags" }
     wd = lv["wochentag"]
     #logger.debug "weekday: #{wd}"
-    doubleweek = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    week = {:a => [false, false, false, false, false, false, false], :b => [false, false, false, false, false, false, false]}
     if wd.include? "täglich"
-      doubleweek = [false, true, true, true, true, true, true, false, true, true, true, true, true, true]
+      week[:a] = [false, true, true, true, true, true, true]
+      week[:b] = [false, true, true, true, true, true, true]
     end
 
-
-
-    a_week = (wd.include? "A-Woche")
-    b_week = (wd.include? "B-Woche")
+    a = (wd.include? "A-Woche")
+    b = (wd.include? "B-Woche")
 
     weekdays.each do |n, day|
       if wd.include? day
-        if a_week == true and b_week == false
-          doubleweek[n] = true
-        elsif b_week == true and a_week == false
-          doubleweek[n+7] = true
+        if a == true and b == false
+          week[:a][n] = true
+        elsif b == true and a == false
+          week[:b][n] = true
         else
-          doubleweek[n] = true
-          doubleweek[n+7] = true
+          week[:a][n] = true
+          week[:b][n] = true
         end
       end
     end
@@ -65,8 +64,11 @@ class WochenplanController < ApplicationController
     #TODO: use a configurable parameter for this:
 
     semester[:vorlesungstage].each do |day|
-      if doubleweek[(day+semester.lvbegin.wday)%14]
-        date = semester.lvbegin + day
+      date = semester.lvbegin + day
+      logger.debug "Date: #{date}"
+      #specification says: "Die A-Woche bezieht sich dabei auf die ungeraden Kalenderwochen und die B-Woche auf die geraden Kalenderwochen."
+      current_week = (date.cweek % 2 == 1) ? :a : :b
+      if week[current_week][(day+semester.lvbegin.wday)%7]
         event = Icalendar::Event.new
 
         # the naming of time functions is very confusing, please read the documentation of tzinfo
