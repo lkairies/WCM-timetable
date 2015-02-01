@@ -65,7 +65,7 @@ class WochenplanController < ApplicationController
 
     semester[:vorlesungstage].each do |day|
       date = semester.lvbegin + day
-      logger.debug "Date: #{date}"
+      #logger.debug "Date: #{date}"
       #specification says: "Die A-Woche bezieht sich dabei auf die ungeraden Kalenderwochen und die B-Woche auf die geraden Kalenderwochen."
       current_week = (date.cweek % 2 == 1) ? :a : :b
       if week[current_week][(day+semester.lvbegin.wday)%7]
