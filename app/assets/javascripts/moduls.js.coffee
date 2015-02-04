@@ -29,9 +29,10 @@ $ ->
 
 # initialize selected lvs on page load
 $ ->
-  for semester, selected_semester_lvs of JSON.parse(localStorage["selected_lvs"])
-    for lvid, value of selected_semester_lvs
-      $("[data-lvid='"+lvid+"']").addClass("lvselected")
+  if localStorage["selected_lvs"]
+    for semester, selected_semester_lvs of JSON.parse(localStorage["selected_lvs"])
+      for lvid, value of selected_semester_lvs
+        $("[data-lvid='"+lvid+"']").addClass("lvselected")
 
 $ ->
   if $.fn.dataTable
