@@ -6,14 +6,60 @@ class WochenplanController < ApplicationController
   LV_TIME_ZONE_STRING = 'Europe/Berlin'
   LV_TIME_ZONE = TZInfo::Timezone.get(LV_TIME_ZONE_STRING)
 
-  def get_lv_events(lv)
-    events = Array.new
-    unless lv[:zeit_von]
-      return events
+  def get_date_in_semester(semester, day, month)
+    date = Date.new(year=semester.lvbegin.year, month=month, day=day)
+    if date < semester.lvbegin
+      date = Date.new(year=semester.lvend.year, month=month, day=day)
     end
-    semester = Semester.find_by(semester_id: lv[:semester])
+    return date
+  end
 
-    #TODO: decode pattern:
+  def get_lv_events(lv)
+    semester = Semester.find_by(semester_id: lv[:semester])
+    lv_begin_date = semester.lvbegin
+    lv_end_date = semester.lvend
+    wd = lv["wochentag"]
+
+    delimeters = Regexp.escape('- /')
+
+    block = {}
+    #detect 11.01./12.01.2014 (Blockveranstaltung)
+    wd.match(/(?<sday>\d\d?)\.(?<smonth>\d\d?)\.[#{delimeters}](?<eday>\d\d?)\.(?<emonth>\d\d?)\.(?<eyear>\d\d\d\d)/) do |match|
+      block = Hash[ match.names.zip(match.captures) ]
+      block["syear"] = block["eyear"]
+    end
+    #detect 11./12.01.2014 (Blockveranstaltung)
+    if block.empty?
+      wd.match(/(?<sday>\d\d?)\.[#{delimeters}](?<eday>\d\d?)\.(?<emonth>\d\d?)\.(?<eyear>\d\d\d\d)/) do |match|
+        block = Hash[ match.names.zip(match.captures) ]
+        block["smonth"] = block["emonth"]
+        block["syear"] = block["eyear"]
+      end
+    end
+    #detect vom 09.12.2014 bis 19.01.2015 täglich
+    wd.match(/(?<sday>\d\d?)\.(?<smonth>\d\d?)\.(?<syear>\d\d\d\d) bis (?<eday>\d\d?)\.(?<emonth>\d\d?)\.(?<eyear>\d\d\d\d)/) do |match|
+      block = Hash[ match.names.zip(match.captures) ]
+    end
+    unless block.empty?
+      block.each do |key, value|
+        block[key] = value.to_i
+      end
+      #logger.debug "block: #{block.inspect}"
+      lv_begin_date = Date.new(year=block["syear"], month=block["smonth"], day=block["sday"])
+      lv_end_date = Date.new(year=block["eyear"], month=block["emonth"], day=block["eday"])
+    end
+
+    #detect donnerstags (A-Woche, ab 13.11.)
+    if block.empty?
+      block = wd.scan(/ab (\d\d?)\.(\d\d?)\./)[0]
+      if block
+        start_day = block[0].to_i
+        start_month = block[1].to_i
+        lv_begin_date = get_date_in_semester(semester, start_day, start_month)
+      end
+    end
+
+    # possible patterns:
     # 11./12.01.2014 (Blockveranstaltung)
     # 30.06.-11.07.2014
     # 14.-25.07.2014
@@ -22,15 +68,17 @@ class WochenplanController < ApplicationController
     # 05.01. 09.01.2015
     # donnerstags (A-Woche, ab 13.11.)
     # vom 09.12.2014 bis 19.01.2015 täglich
-    #TODO: what does "ZL" mean?
     # ZL
+    # ZF
+    #TODO: what does "ZL" mean? or "ZF"?
 
+    event_has_weekday = false
     # ruby Date.wday begins the week at sunday
     weekdays = {1 => "montags", 2 => "dienstags", 3 => "mittwochs", 4 => "donnerstags", 5 => "freitags", 6 => "samstags" }
-    wd = lv["wochentag"]
     #logger.debug "weekday: #{wd}"
     week = {:a => [false, false, false, false, false, false, false], :b => [false, false, false, false, false, false, false]}
     if wd.include? "täglich"
+      event_has_weekday = true
       week[:a] = [false, true, true, true, true, true, true]
       week[:b] = [false, true, true, true, true, true, true]
     end
@@ -40,6 +88,7 @@ class WochenplanController < ApplicationController
 
     weekdays.each do |n, day|
       if wd.include? day
+        event_has_weekday = true
         if a == true and b == false
           week[:a][n] = true
         elsif b == true and a == false
@@ -51,44 +100,62 @@ class WochenplanController < ApplicationController
       end
     end
 
-    # lvStart and lvEnd contain the time information for the lv. the array contains hours and minutes.
-    lv_start = lv["zeit_von"].split(":")
-    start_hours = lv_start[0].to_i
-    start_minutes = lv_start[1].to_i
-    lv_end = lv["zeit_bis"].split(":")
-    end_hours = lv_end[0].to_i
-    end_minutes = lv_end[1].to_i
+    unless event_has_weekday
+      week[:a] = [true, true, true, true, true, true, true]
+      week[:b] = [true, true, true, true, true, true, true]
+    end
 
+    lv_start_time = {}
+    lv_end_time = {}
+
+    if lv[:zeit_von] and lv[:zeit_bis]
+      # lv_start and lv_end contain the time information for the lv. the array contains hours and minutes.
+      lv_start = lv["zeit_von"].split(":")
+      lv_start_time[:hours] = lv_start[0].to_i
+      lv_start_time[:minutes] = lv_start[1].to_i
+      lv_end = lv["zeit_bis"].split(":")
+      lv_end_time[:hours] = lv_end[0].to_i
+      lv_end_time[:minutes] = lv_end[1].to_i
+    # end
+    else
+      lv_start_time = { :hours => 7, :minutes => 0}
+      lv_end_time = { :hours => 21, :minutes => 0}
+    end
     #logger.debug "dozent: #{lv[:dozent]}"
 
-    #TODO: use a configurable parameter for this:
-
+    events = Array.new
     semester[:vorlesungstage].each do |day|
       date = semester.lvbegin + day
+      next if (date < lv_begin_date) or (date > lv_end_date)
+
       #logger.debug "Date: #{date}"
       #specification says: "Die A-Woche bezieht sich dabei auf die ungeraden Kalenderwochen und die B-Woche auf die geraden Kalenderwochen."
       current_week = (date.cweek % 2 == 1) ? :a : :b
       if week[current_week][(day+semester.lvbegin.wday)%7]
         event = Icalendar::Event.new
 
-        # the naming of time functions is very confusing, please read the documentation of tzinfo
-        #lvstart = LV_TIME_ZONE.local_to_utc(Time.utc(date.year, date.month, date.day, start_hours, start_minutes))
-        #logger.debug "lvstart #{lvstart.to_s}"
-        #dtstart = DateTime.parse(lvstart.to_s)
-        dtstart = DateTime.new(year=date.year, month=date.month, day=date.day, hours=start_hours, minutes=start_minutes)
-        event.dtstart = Icalendar::Values::DateTime.new dtstart, 'tzid' => LV_TIME_ZONE_STRING
-        logger.debug "dtstart :: #{dtstart} :: #{dtstart.inspect} :: #{dtstart.to_s}"
-        logger.debug "e.dtstart: #{event.dtstart.inspect}"
-        dtend = DateTime.new(year=date.year, month=date.month, day=date.day, hours=end_hours, minutes=end_minutes)
-        #lvend = LV_TIME_ZONE.local_to_utc(Time.utc(date.year, date.month, date.day, end_hours, end_minutes))
-        #dtend = DateTime.parse(lvend.to_s)
-        event.dtend = Icalendar::Values::DateTime.new dtend, 'tzid' => LV_TIME_ZONE_STRING
+        if lv_start_time.empty?
+          event.dtstart = date
+          event.dtstart.ical_params = { "VALUE" => "DATE" }
+        else
+          dtstart = DateTime.new(year=date.year, month=date.month, day=date.day, hours=lv_start_time[:hours], minutes=lv_start_time[:minutes])
+          event.dtstart = Icalendar::Values::DateTime.new dtstart, 'tzid' => LV_TIME_ZONE_STRING
+          #logger.debug "dtstart :: #{dtstart} :: #{dtstart.inspect} :: #{dtstart.to_s}"
+          #logger.debug "e.dtstart: #{event.dtstart.inspect}"
+          dtend = DateTime.new(year=date.year, month=date.month, day=date.day, hours=lv_end_time[:hours], minutes=lv_end_time[:minutes])
+          event.dtend = Icalendar::Values::DateTime.new dtend, 'tzid' => LV_TIME_ZONE_STRING
+        end
         event.summary = lv["titel"]
         event.location = lv[:raum]
         # organizer field requires an uri (can be an email address) (https://tools.ietf.org/html/rfc5545#section-3.3.3)
         #event.organizer = lv[:dozent]
-        event.description = "Titel: #{lv[:titel]}\n\n"+
-          "Dozent(en): #{lv[:dozent].split(";")}\n\n"+
+        event.description = "Titel: #{lv[:titel]}\n\n"
+        event.description += "Dozenten:\n"
+        lv[:dozent].each do |dozent|
+          event.description += "#{dozent}\n"
+        end
+        event.description += "\n"+
+          #{lv[:dozent].split(";")}\n\n"+
           "Lehrform: #{lv[:form]}\n\n"+
           "Modul: #{lv[:modul_id]}\n\n"+
           "Terminregel: #{lv[:wochentag]}"
