@@ -27,8 +27,12 @@
    <% end %>
    <td><ul>
     <% @modul_lvs[modul_nummer].each do |lv_titel, lv_id| %>
-     <%= content_tag :li, :data => {lvid: lv_id } do -%>
-      <%= lv_titel %>
+     <%= content_tag :li do -%>
+      <%= content_tag :span, :data => {lvid: lv_id } do lv_titel end %>
+         [<%= link_to("Google", "https://www.google.com/search?" + {
+              #"tbs" => "qdr:m9", # only search pages which were published in the last 9 months. does not seem to work with moodle2 pages, so disable it for now.
+              "q" => lv_titel+" site:uni-leipzig.de"
+         }.to_param, :target => "_blank") %>]
      <% end -%>
     <% end %>
    </ul></td>
