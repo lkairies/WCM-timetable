@@ -135,8 +135,13 @@ class WochenplanController < ApplicationController
         event = Icalendar::Event.new
 
         if lv_start_time.empty?
+          # TODO: currently unused code. when there is no time specified for an event, make it a day event.
+          # Currently we are using a hardcoded time in this case (7-21 hours),
+          # because the json renderer demands it this way. the json renderer is used by the jquery-week-calendar.
           event.dtstart = date
           event.dtstart.ical_params = { "VALUE" => "DATE" }
+          event.dtend = date
+          event.dtend.ical_params = { "VALUE" => "DATE" }
         else
           dtstart = DateTime.new(year=date.year, month=date.month, day=date.day, hours=lv_start_time[:hours], minutes=lv_start_time[:minutes])
           event.dtstart = Icalendar::Values::DateTime.new dtstart, 'tzid' => LV_TIME_ZONE_STRING
