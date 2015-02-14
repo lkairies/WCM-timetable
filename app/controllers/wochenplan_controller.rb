@@ -124,7 +124,11 @@ class WochenplanController < ApplicationController
     # end
     else
       lv_start_time = { :hours => 7, :minutes => 0}
-      lv_end_time = { :hours => 21, :minutes => 0}
+      if (lv_end_date - lv_begin_date) < 15
+        lv_end_time = { :hours => 21, :minutes => 0}
+      else
+        lv_end_time = { :hours => 7, :minutes => 45}
+      end
     end
     #logger.debug "dozent: #{lv[:dozent]}"
 
