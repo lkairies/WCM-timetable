@@ -1,15 +1,14 @@
-
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <ul class="nav navbar-nav">
-      <li><%= link_to("Module", moduls_path( :semester => selected_semester)) %></li>
-      <li><%= form_tag("/wochenplan", method:"get", :class => ["wochenplan_form", "navbar-form", "navbar-left"]) do %>
-        <%= hidden_field_tag(:semester, selected_semester) %>
-        <%= hidden_field_tag(:lvs) %>
-        <%= submit_tag("Wochenplan", :class => "btn btn-default") %>
-        <%= submit_tag("Wochenplan ICS", :formaction => "/wochenplan.ics", :class => "btn btn-default") %>
-        <!--<%= submit_tag("Wochenplan JSON", :formaction => "/wochenplan.json", :class => "btn btn-default") %>-->
-      <% end %></li>
+      <li><%= link_to("Module", moduls_path(:semester => selected_semester)) %></li>
+      <li><%= form_tag("/wochenplan", method: "get", :class => ["wochenplan_form", "navbar-form", "navbar-left"]) do %>
+            <%= hidden_field_tag(:semester, selected_semester) %>
+            <%= hidden_field_tag(:lvs) %>
+            <%= submit_tag("Wochenplan", :class => "btn btn-default") %>
+            <%= submit_tag("Wochenplan ICS", :formaction => "/wochenplan.ics", :class => "btn btn-default") %>
+            <!--<%= submit_tag("Wochenplan JSON", :formaction => "/wochenplan.json", :class => "btn btn-default") %>-->
+        <% end %></li>
     </ul>
     <%= yield :navbar %>
   </div>

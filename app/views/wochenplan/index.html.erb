@@ -2,7 +2,7 @@
     <script type='text/javascript'>
         //TODO: set start date to max(today, semester_lv_begin)
         //TODO: set minimum date and maximum date to semester_begin and semester_end -- does not seem to work!!!!
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#calendar').weekCalendar({
                 timeslotsPerHour: 4,
                 timeslotHeight: 20,
@@ -17,13 +17,13 @@
                 dateFormat: "d.m.Y",// "M d, Y",
                 readonly: true,
                 data: $('#calendar-data-json').attr('href'),
-                height: function($calendar) {
+                height: function ($calendar) {
                     return $(window).height() - 51;
                 },
-                eventRender : function(calEvent, $event) {
+                eventRender: function (calEvent, $event) {
                     if (calEvent.end.getTime() < new Date().getTime()) {
                         $event.css('backgroundColor', '#aaa');
-                        $event.find('.time').css({'backgroundColor': '#999', 'border':'1px solid #888'});
+                        $event.find('.time').css({'backgroundColor': '#999', 'border': '1px solid #888'});
                     }
                 }
             });
@@ -43,9 +43,12 @@
             <span class="glyphicon glyphicon-calendar">ICS</span>
         <% end %>
       </li>
-      <li><%= link_to "https://support.google.com/calendar/answer/37100?hl=de", :target => "_blank" do%>(Anleitung)<% end %></li>
+      <li><%= link_to "https://support.google.com/calendar/answer/37100?hl=de", :target => "_blank" do %>(Anleitung)
+        <% end %></li>
     </ul>
 <% end %>
 
-<%= content_tag :div, :id => "calendar-data", :data => {semester_begin: @semester.begin.to_s, semester_end: @semester.end.to_s} do end %>
-<%= content_tag :div, :id => "calendar" do end%>
+<%= content_tag :div, :id => "calendar-data", :data => {semester_begin: @semester.begin.to_s, semester_end: @semester.end.to_s} do
+end %>
+<%= content_tag :div, :id => "calendar" do
+end %>
