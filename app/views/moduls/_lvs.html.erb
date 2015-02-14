@@ -1,44 +1,47 @@
+<% @lvs.each do |lv_titel, lvlist| %>
+    <%= content_tag :div, class: ["row"].push(lvlist[0].form), :data => {:semester => selected_semester} do -%>
+        <%= content_tag :div, class: ["col-md-12"] do -%>
+            <h3>
+              <%= lv_titel %>
+              <% if lvlist[0].weblink %>
+                  (link:<%= lvlist[0].weblink %>)
+              <% end %>
+            </h3>
+        <% end -%>
 
-<% @lvs.each do |lv_titel,lvlist| %>
-    <%= content_tag :div, class: ["row"].push(lvlist[0].form), :data => { :semester => selected_semester } do -%>
-      <%= content_tag :div, class: ["col-md-12"] do -%>
-          <h3>
-            <%= lv_titel %>
-            <% if lvlist[0].weblink %>
-              (link:<%= lvlist[0].weblink %>)
-            <% end %>
-          </h3>
-      <% end -%>
-
-      <div class="col-md-12">
+        <div class="col-md-12">
           <table class="table table-bordered">
-             <thead>
-                <tr>
-                   <th></th>
-                   <th>Wochentag</th>
-                   <th>Begin</th>
-                   <th>Ende</th>
-                   <th>Raum</th>
-                   <th>Dozent</th>
-                </tr>
-             </thead>
-             <tbody>
-                <% lvlist.each do |lv| %>
-                  <%= content_tag :tr, :data => {lvid: lv.lv_id } do -%>
-                      <td style="width:1px">
-                        <button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                      </td>
-                      <td><%= lv.wochentag %></td>
-                      <td><%= lv.zeit_von %></td>
-                      <td><%= lv.zeit_bis %></td>
-                      <td><%= lv.raum %></td>
-                      <td><ul><% lv.dozent.each do |d| %>
-                        <li><%= d %></li>
-                      <% end %></ul></td>
-                   <% end -%>
-                <% end %>
-             </tbody>
+            <thead>
+            <tr>
+              <th></th>
+              <th>Wochentag</th>
+              <th>Begin</th>
+              <th>Ende</th>
+              <th>Raum</th>
+              <th>Dozent</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% lvlist.each do |lv| %>
+                <%= content_tag :tr, :data => {lvid: lv.lv_id} do -%>
+                    <td style="width:1px">
+                      <button type="button" class="btn btn-default btn-xs">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    </td>
+                    <td><%= lv.wochentag %></td>
+                    <td><%= lv.zeit_von %></td>
+                    <td><%= lv.zeit_bis %></td>
+                    <td><%= lv.raum %></td>
+                    <td>
+                      <ul>
+                        <% lv.dozent.each do |d| %>
+                            <li><%= d %></li>
+                        <% end %></ul>
+                    </td>
+                <% end -%>
+            <% end %>
+            </tbody>
           </table>
-      </div>
+        </div>
     <% end -%>
 <% end %>

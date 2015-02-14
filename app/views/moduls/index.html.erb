@@ -1,42 +1,46 @@
 <h1>Modulübersicht</h1>
 <%= render 'form' %>
 <%= content_tag :table, id: "module-table", class: ["table", "table-striped", "table-bordered"], :data => {semester: selected_semester} do -%>
- <thead>
- <tr>
-  <th>Titel</th>
-  <th>Nummer</th>
-  <th>Form</th>
-  <th>Credits</th>
-  <th>Lehrveranstaltungen</th>
- </tr>
- </thead>
+    <thead>
+    <tr>
+      <th>Titel</th>
+      <th>Nummer</th>
+      <th>Form</th>
+      <th>Credits</th>
+      <th>Lehrveranstaltungen</th>
+    </tr>
+    </thead>
 
- <tbody>
- <% @modul_lvs.each do |modul_nummer, lvs| %>
-  <tr>
-   <% if @moduls.include?(modul_nummer) %>
-    <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
-    <td class="modul_nummer"><%= modul_nummer %></td>
-    <td><%= @moduls[modul_nummer].form %></td>
-    <td><%= @moduls[modul_nummer].credits %></td>
-   <% else %>
-    <td><%= modul_nummer %></td>
-    <td><%= modul_nummer %></td>
-    <td />
-    <td />
-   <% end %>
-   <td><ul>
-    <% @modul_lvs[modul_nummer].each do |lv_titel, lv_id| %>
-     <%= content_tag :li do -%>
-      <%= content_tag :span, :data => {lvid: lv_id } do lv_titel end %>
-         [<%= link_to("Google", "https://www.google.com/search?" + {
-              #"tbs" => "qdr:m9", # only search pages which were published in the last 9 months. does not seem to work with moodle2 pages, so disable it for now.
-              "q" => lv_titel+" site:uni-leipzig.de"
-         }.to_param, :target => "_blank") %>]
-     <% end -%>
+    <tbody>
+    <% @modul_lvs.each do |modul_nummer, lvs| %>
+        <tr>
+          <% if @moduls.include?(modul_nummer) %>
+              <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
+              <td class="modul_nummer"><%= modul_nummer %></td>
+              <td><%= @moduls[modul_nummer].form %></td>
+              <td><%= @moduls[modul_nummer].credits %></td>
+          <% else %>
+              <td><%= modul_nummer %></td>
+              <td><%= modul_nummer %></td>
+              <td/>
+              <td/>
+          <% end %>
+          <td>
+            <ul>
+              <% @modul_lvs[modul_nummer].each do |lv_titel, lv_id| %>
+                  <%= content_tag :li do -%>
+                      <%= content_tag :span, :data => {lvid: lv_id} do
+                        lv_titel
+                      end %>
+                      [<%= link_to("Google", "https://www.google.com/search?" + {
+                                                   #"tbs" => "qdr:m9", # only search pages which were published in the last 9 months. does not seem to work with moodle2 pages, so disable it for now.
+                                                   "q" => lv_titel+" site:uni-leipzig.de"
+                                           }.to_param, :target => "_blank") %>]
+                  <% end -%>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
     <% end %>
-   </ul></td>
-  </tr>
- <% end %>
- </tbody>
+    </tbody>
 <% end -%>

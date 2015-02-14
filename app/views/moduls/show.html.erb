@@ -1,48 +1,48 @@
 <div class="container">
-   <div class="row">    
-      <div class="col-md-12">
-          <h1><%= @modul.titel %> (<%= @modul.modul_id %>)</h1>
-      </div>
-   </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1><%= @modul.titel %> (<%= @modul.modul_id %>)</h1>
+    </div>
+  </div>
 
-   <div class="row" >
-      <div class="col-md-3 modul-overview">
-        <% if @modul.credits %>
-         <%= @modul.credits %> Leistungspunkte
-        <% end %>
-        &#8203;
-      </div>
-      <div class="col-md-3 modul-overview">
-         <%= @modul.form %> &#8203;
-      </div>
-      <div class="col-md-3 modul-overview">
-         <%= @modul.art %> &#8203;
-      </div>
-      <div class="col-md-3 modul-overview">
-          <%= @modul.semesterturnus %> &#8203;
-      </div>
-   </div>
+  <div class="row">
+    <div class="col-md-3 modul-overview">
+      <% if @modul.credits %>
+          <%= @modul.credits %> Leistungspunkte
+      <% end %>
+      &#8203;
+    </div>
+    <div class="col-md-3 modul-overview">
+      <%= @modul.form %> &#8203;
+    </div>
+    <div class="col-md-3 modul-overview">
+      <%= @modul.art %> &#8203;
+    </div>
+    <div class="col-md-3 modul-overview">
+      <%= @modul.semesterturnus %> &#8203;
+    </div>
+  </div>
 
   <% if @modul.ziele %>
-   <div class="row">
-      <div class="col-md-12">
-         <h2>Ziele:</h2>
-         <%= simple_format(@modul.ziele) %>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Ziele:</h2>
+          <%= simple_format(@modul.ziele) %>
+        </div>
       </div>
-   </div>
   <% end %>
   <% if @modul.beschreibung %>
-   <div class="row">
-      <div class="col-md-12">
-         <h2>Inhalt:</h2>
-         <%= simple_format(@modul.beschreibung) %>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Inhalt:</h2>
+          <%= simple_format(@modul.beschreibung) %>
+        </div>
       </div>
-   </div>
   <% end %>
   <div class="row">
-     <div class="col-md-12">
-        <h2>Lehrveranstaltungen:</h2>
-     </div>
+    <div class="col-md-12">
+      <h2>Lehrveranstaltungen:</h2>
+    </div>
   </div>
   <%= render "lvs" %>
 </div>
