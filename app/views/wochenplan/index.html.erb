@@ -3,29 +3,31 @@
         //TODO: set start date to max(today, semester_lv_begin)
         //TODO: set minimum date and maximum date to semester_begin and semester_end -- does not seem to work!!!!
         $(document).ready(function () {
-            $('#calendar').weekCalendar({
-                timeslotsPerHour: 4,
-                timeslotHeight: 20,
-                hourLine: true,
-                use24Hour: true,
-                longMonths: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                longDays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
-                minDate: $('#calendar-data').data('semester_begin'),
-                maxDate: $('#calendar-data').data('semester_end'),
-                businessHours: {start: 7, end: 22, limitDisplay: true},
-                firstDayOfWeek: 1,
-                dateFormat: "d.m.Y",// "M d, Y",
-                readonly: true,
-                data: $('#calendar-data-json').attr('href'),
-                height: function ($calendar) {
-                    return $(window).height() - 51;
-                },
-                eventRender: function (calEvent, $event) {
-                    if (calEvent.end.getTime() < new Date().getTime()) {
-                        $event.css('backgroundColor', '#aaa');
-                        $event.find('.time').css({'backgroundColor': '#999', 'border': '1px solid #888'});
+            $.getJSON($('#calendar-data-json').attr('href')).done( function ( events ) {
+                $('#calendar').weekCalendar({
+                    timeslotsPerHour: 4,
+                    timeslotHeight: 20,
+                    hourLine: true,
+                    use24Hour: true,
+                    longMonths: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    longDays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                    minDate: $('#calendar-data').data('semester_begin'),
+                    maxDate: $('#calendar-data').data('semester_end'),
+                    businessHours: {start: 7, end: 22, limitDisplay: true},
+                    firstDayOfWeek: 1,
+                    dateFormat: "d.m.Y",// "M d, Y",
+                    readonly: true,
+                    data: events,
+                    height: function ($calendar) {
+                        return $(window).height() - 51;
+                    },
+                    eventRender: function (calEvent, $event) {
+                        if (calEvent.end.getTime() < new Date().getTime()) {
+                            $event.css('backgroundColor', '#aaa');
+                            $event.find('.time').css({'backgroundColor': '#999', 'border': '1px solid #888'});
+                        }
                     }
-                }
+                });
             });
         });
     </script>
