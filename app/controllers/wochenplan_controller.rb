@@ -49,13 +49,18 @@ class WochenplanController < ApplicationController
       lv_end_date = Date.new(year=block["eyear"], month=block["emonth"], day=block["eday"])
     end
 
-    #detect donnerstags (A-Woche, ab 13.11.)
     if block.empty?
-      block = wd.scan(/ab (\d\d?)\.(\d\d?)\./)[0]
-      if block
-        start_day = block[0].to_i
-        start_month = block[1].to_i
+      #detect donnerstags (A-Woche, ab 13.11.)
+      wd.match(/ab (\d\d?)\.(\d\d?)\./) do |match|
+        start_day = match.captures[0].to_i
+        start_month = match.captures[1].to_i
         lv_begin_date = get_date_in_semester(semester, start_day, start_month)
+      end
+      #detect freitags (bis 12.6.)
+      wd.match(/bis (\d\d?)\.(\d\d?)\./) do |match|
+        end_day = match.captures[0].to_i
+        end_month = match.captures[1].to_i
+        lv_end_date = get_date_in_semester(semester, end_day, end_month)
       end
     end
 
