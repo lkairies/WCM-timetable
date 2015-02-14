@@ -15,7 +15,7 @@
     <% @modul_lvs.each do |modul_nummer, lvs| %>
         <tr>
           <% if @moduls.include?(modul_nummer) %>
-              <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer) %></td>
+              <td><%= link_to @moduls[modul_nummer].titel, modul_path(modul_nummer, {:semester => selected_semester}) %></td>
               <td class="modul_nummer"><%= modul_nummer %></td>
               <td><%= @moduls[modul_nummer].form %></td>
               <td><%= @moduls[modul_nummer].credits %></td>
