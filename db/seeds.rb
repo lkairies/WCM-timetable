@@ -7,6 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 require 'date'
+require 'open-uri'
 
 json_semester_info = `scripts/get_semester_info.py`
 semesters = JSON.parse(json_semester_info)
@@ -69,11 +70,25 @@ end
 
 case Rails.env
 when "production"
-  jsonmaster = `scripts/parse_master.py -c`
-  jsonbachelor = `scripts/parse_bachelor.py -c`
+  jsonmaster = `scripts/parse_master.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html`
+  jsonbachelor = `scripts/parse_bachelor.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html`
 else
-  jsonmaster = `scripts/parse_master.py`
-  jsonbachelor = `scripts/parse_bachelor.py`
+  tempdir = 'tmp'
+  FileUtils.mkdir_p(tempdir) unless File.directory?(tempdir)
+  ma_tmp_file = File.absolute_path(tempdir+'/ma-inf-module.pdf')
+  unless File.exist?( ma_tmp_file )
+    open(ma_tmp_file, 'wb') do |file|
+      file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html').read
+    end
+  end
+  jsonmaster = `scripts/parse_master.py file:#{ma_tmp_file}`
+  ba_tmp_file = File.absolute_path(tempdir+'/ba-inf-module.pdf')
+  unless File.exist?( ba_tmp_file )
+    open(ba_tmp_file, 'wb') do |file|
+      file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html').read
+    end
+  end
+  jsonbachelor = `scripts/parse_bachelor.py file:#{ba_tmp_file}`
 end
 
 modules = JSON.parse(jsonmaster)

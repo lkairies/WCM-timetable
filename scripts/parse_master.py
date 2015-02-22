@@ -3,18 +3,12 @@
 # vorraussetzungen: pdftotext version 0.18.4
 # python3, python3-urllib3
 #
-import os
 import sys
 import io
 import json
 import re
 from parser_helpers import *
 MODULE_DELIMITER_pdftotext = "Master of Science Informatik\nAkademischer Grad\n\nModulnummer\n\nModulform\n\nMaster of Science\n\n"
-
-current_modules = \
-'http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html'
-
-testurl = 'file://'+os.path.dirname(os.path.realpath(__file__))+'/test/ma-inf-module.pdf'
 
 #Es gibt immer zwei Titel für ein Modul (deutsch, englisch).
 #Bei manchen Modulen ist direkt nach dem Titel eine Angabe zur Modulart (Kern- / Vertiefungsmodul.
@@ -94,16 +88,6 @@ def main(url):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        if sys.argv[1] == "-c":
-            print(json.dumps(main(current_modules)))
-        elif sys.argv[1][0:2] == "-t":
-            modules = main(testurl)
-            for modul in modules:
-                attributes = []
-                for i in range(2, len(sys.argv)):
-                    attributes.append(modul[sys.argv[i]])
-                print(attributes)
-        else:
-            print(json.dumps(main(sys.argv[1])))
+        print(json.dumps(main(sys.argv[1])))
     else:
-        print(json.dumps(main(testurl)))
+        print('missing argument', file=sys.stderr)
