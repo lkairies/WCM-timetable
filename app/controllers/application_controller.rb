@@ -2,18 +2,22 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
+
   protected def selected_semester
-    if params[:semester] and params[:semester] != ''
-      return params[:semester]
-    else
+    unless params[:semester] and params[:semester] != ''
+      #fallback value, because we don't really trust our database
+      params[:semester] = "w14"
+
       require 'date'
       today = Date.today
-      Semester.all.each do |semester|
-        if semester[:begin] < today and today < semester[:end]
-          return semester[:semester_id]
+      Semester.order(:lvend).each do |semester|
+        if today <= semester[:lvend]
+          params[:semester] = semester[:semester_id]
+          break
         end
       end
     end
+    return params[:semester]
   end
   helper_method :selected_semester
 end
