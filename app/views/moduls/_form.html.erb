@@ -1,8 +1,0 @@
-<%= form_tag("moduls", method: "get", :id => 'modulsfilter_form') do %>
-    <p>
-      <%= label_tag("studiengang", "Studiengang:") %>
-      <%= select_tag(:studiengang, options_for_select(@studiengaenge, selected=@selected_sg)) %>
-      <%= label_tag("semester", "Semester:") %>
-      <%= select_tag(:semester, options_for_select(@semesters, selected=selected_semester)) %>
-    </p>
-<% end %>

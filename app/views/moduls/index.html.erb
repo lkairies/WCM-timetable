@@ -1,5 +1,32 @@
 <h1>Modulübersicht</h1>
-<%= render 'form' %>
+<% # the following two divs will be moved into another div after the module-table is generated.
+   # they should probably be invisible before they are moved to their final location. %>
+<div id="dropdown_studiengang" class="dropdown dataTables_filter col-sm-8">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    <%= params[:studiengang] ? params[:studiengang] : "Studiengang" %>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <% @studiengaenge.each do |sg| %>
+        <li role="presentation">
+          <%= link_to sg, request.parameters.merge({:studiengang => sg}) %>
+        </li>
+    <% end %>
+  </ul>
+</div>
+<div id="dropdown_semester" class="dropdown dataTables_filter col-sm-4">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    <%= params[:semester] ? params[:semester] : "Semester" %>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <% @semesters.each do |semester| %>
+        <li role="presentation">
+          <%= link_to semester, request.parameters.merge({:semester => semester}) %>
+        </li>
+    <% end %>
+  </ul>
+</div>
 <%= content_tag :table, id: "module-table", class: ["table", "table-striped", "table-bordered"], :data => {semester: selected_semester} do -%>
     <thead>
     <tr>
