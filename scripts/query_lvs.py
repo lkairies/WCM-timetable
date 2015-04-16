@@ -16,7 +16,7 @@ PREFIX_OD = PREFIX_HOST+"model/"
 
 def fake_modul_id(unit_uri):
   prefix_unit_as_modul = "UNIT-"
-  return prefix_unit_as_modul + unit_uri.replace(PREFIX_ODS, "").replace(".", " ")
+  return prefix_unit_as_modul + unit_uri.replace(PREFIX_ODS, "").replace(".", "-")
 
 def query_odfmi(query):
   sparql = SPARQLWrapper("http://pcai003.informatik.uni-leipzig.de:8892/sparql")
