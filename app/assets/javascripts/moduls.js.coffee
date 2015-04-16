@@ -40,3 +40,5 @@ $ ->
       $('#module-table').DataTable( {
         paging: false
       } )
+      # move custom filter divs into generated element
+      $('#module-table_wrapper').children().first().children().first().append($('#dropdown_studiengang')).append($('#dropdown_semester'))
