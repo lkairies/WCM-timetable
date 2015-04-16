@@ -75,7 +75,7 @@ class WochenplanController < ApplicationController
     # vom 09.12.2014 bis 19.01.2015 täglich
     # ZL
     # ZF
-    #TODO: what does "ZL" mean? or "ZF"?
+    #TODO: what does "ZL" mean? or "ZF"? Antwort: ZL="Zeitfenster Lehramt"
 
     event_has_weekday = false
     # ruby Date.wday begins the week at sunday
