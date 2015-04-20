@@ -220,7 +220,7 @@ class WochenplanController < ApplicationController
       get_lv_events(lv).each do |ical_event|
         event = {}
         event["id"] = ical_event.uid
-        event["title"] = ical_event.summary + "<br />" + ical_event.location
+        event["title"] = ical_event.summary + "<br />(" + ical_event.location + ")"
         event["start"] = ical_event.dtstart
         event["end"] = ical_event.dtend
         events.push(event)
