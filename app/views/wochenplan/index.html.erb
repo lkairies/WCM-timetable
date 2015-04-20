@@ -22,6 +22,7 @@
                         return $(window).height() - 51;
                     },
                     eventRender: function (calEvent, $event) {
+                        $event.addClass(calEvent.form);
                         if (calEvent.end.getTime() < new Date().getTime()) {
                             $event.css('backgroundColor', '#aaa');
                             $event.find('.time').css({'backgroundColor': '#999', 'border': '1px solid #888'});

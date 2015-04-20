@@ -221,6 +221,7 @@ class WochenplanController < ApplicationController
         event["title"] = ical_event.summary + "<br />(" + ical_event.location + ")"
         event["start"] = ical_event.dtstart
         event["end"] = ical_event.dtend
+        event["form"] = lv.form
         events.push(event)
       end
     end
