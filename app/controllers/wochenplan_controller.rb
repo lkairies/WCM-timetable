@@ -163,14 +163,12 @@ class WochenplanController < ApplicationController
         event.location = lv[:raum]
         # organizer field requires an uri (can be an email address) (https://tools.ietf.org/html/rfc5545#section-3.3.3)
         #event.organizer = lv[:dozent]
-        event.description = "Titel: #{lv[:titel]}\n\n"
-        event.description += "Dozenten:\n"
+        event.description = "Dozenten:\n"
         lv[:dozent].each do |dozent|
           event.description += "#{dozent}\n"
         end
         event.description += "\n"+
-          #{lv[:dozent].split(";")}\n\n"+
-          "Lehrform: #{lv[:form]}\n\n"+
+          "Lehrform: #{lv.form}\n\n"+
           "Modul: #{lv[:modul_id]}\n\n"+
           "Terminregel: #{lv[:wochentag]}"
 
