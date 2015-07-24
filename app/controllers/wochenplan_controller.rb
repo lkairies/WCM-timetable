@@ -219,7 +219,7 @@ class WochenplanController < ApplicationController
     return lvs
   end
 
-  private def generate_ics
+  private def render_ics
     require 'icalendar/tzinfo'
     @icalendar = Icalendar::Calendar.new
     timezone = LV_TIME_ZONE.ical_timezone DateTime.now
@@ -232,10 +232,6 @@ class WochenplanController < ApplicationController
         @icalendar.add_event(e)
       end
     end
-  end
-
-  private def render_ics
-    generate_ics
     @icalendar.publish
     @icalendar.to_ical
   end
