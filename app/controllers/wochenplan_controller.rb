@@ -259,20 +259,9 @@ class WochenplanController < ApplicationController
     return result
   end
 
+  # the html page does not need the @icalendar object. it uses ajax to
+  # get the json version of the calendar.
   private def render_html
-    @icalendar = Icalendar::Calendar.new
-    url_lvs = params[:lvs]
-    #logger.debug "lvs: #{url_lvs.inspect}"
-    array = url_lvs.split(",")
-    #logger.debug "decoded: #{array.inspect}"
-    array.each do |lv_id|
-      lv = Lehrveranstaltung.where(lv_id: lv_id).where(semester: selected_semester).first
-      #logger.debug "selected: #{lv.inspect}"
-      get_lv_events(lv).each do |e|
-        @icalendar.add_event(e)
-      end
-    end
-    @icalendar.publish
     @semester = Semester.find_by(semester_id: selected_semester)
   end
 
