@@ -3,9 +3,14 @@ require 'date'
 require 'tzinfo'
 class WochenplanController < ApplicationController
 
+  # TODO: move this to config file
   LV_TIME_ZONE_STRING = 'Europe/Berlin'
   LV_TIME_ZONE = TZInfo::Timezone.get(LV_TIME_ZONE_STRING)
 
+  # this method uses the semester information to construct a date
+  # object for a given day and month.
+  # example: 14.01. in w14 is 14.01.2015
+  # returns a date object.
   def get_date_in_semester(semester, day, month)
     date = Date.new(year=semester.lvbegin.year, month=month, day=day)
     if date < semester.lvbegin
@@ -14,6 +19,31 @@ class WochenplanController < ApplicationController
     return date
   end
 
+  # this method converts one lehrveranstaltung into a list of
+  # icalendar events.
+  #
+  # this is mainly parsing of the field "wochentag", which contains a
+  # range of possible formats.
+  # We check for three different types of information:
+  #  1. day of week ("montags", "dienstags", "mittwochs", "donnerstags", "freitags", "samstags", "täglich")
+  #  2. bi-weekly timing ("A-Woche", "B-Woche")
+  #  3. restrictions in date (different styles of formatting)
+  #    > 11.01./12.01.2014
+  #    > 11./12.01.2014
+  #    > vom 09.12.2014 bis 19.01.2015
+  #    > ab 13.11.
+  #    > bis 12.6.
+  #
+  # the fields "zeit_von" and "zeit_bis" are checked for presence and
+  # parsed to hours and minutes.
+  #
+  # after all the parsing is done, the list of events is generated.
+  # each events contains the following information:
+  #  > Start (datetime)
+  #  > End   (datetime)
+  #  > Summary     (text)
+  #  > Location    (text)
+  #  > Description (text)
   def get_lv_events(lv)
     semester = Semester.find_by(semester_id: lv[:semester])
     lv_begin_date = semester.lvbegin
@@ -170,7 +200,7 @@ class WochenplanController < ApplicationController
         event.description += "\n"+
           "Lehrform: #{lv.form}\n\n"+
           "Modul: #{lv[:modul_id]}\n\n"+
-          "Terminregel: #{lv[:wochentag]}"
+          "Zeit: #{lv[:wochentag]}"
 
         events.push(event)
       end
