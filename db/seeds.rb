@@ -8,24 +8,37 @@
 
 require 'date'
 require 'open-uri'
+require 'nokogiri'
 
-json_semester_info = `scripts/get_semester_info.py`
-semesters = JSON.parse(json_semester_info)
-semesters.each do |semester|
-  db_semester = Semester.new
+# TODO: move uri to config file
+akademisches_jahr_uri = "https://www.zv.uni-leipzig.de/studium/studienorganisation/akademisches-jahr.html"
+
+# get semester information from the official webpage
+# this includes:
+#  > start and end date of the semester
+#  > start and end date of lehrveranstaltungs in the semester
+#  > list of days at which lehrveranstaltungs will actually happen (example: 0,1,2,3,4,5,7,8,9,10,12,14,...)
+#    counting starts with the start date of lehrveranstaltungs in the semester
+doc = Nokogiri::HTML(open(akademisches_jahr_uri))
+doc.xpath('//*[@id="content-inner"]/div/table/tbody').each do |tbody_tag|
+  semester = {}
+  tbody_tag.children.each do |tr_tag|
+    semester[tr_tag.children[0].content] = tr_tag.children[1].content
+  end
 
   time = semester["Zeitraum"].split("bis")
-  db_semester.begin = Date.parse(time[0])
-  db_semester.end = Date.parse(time[1])
+  semester_begin = Date.parse(time[0])
+  semester_end = Date.parse(time[1])
 
-  semester_year = db_semester.begin.year-2000
-  # if begin and end are in the same year, it's a sommersemester
-  if db_semester.begin.year == db_semester.end.year
-    semester_id = "s" + semester_year.to_s
-  else
-    semester_id = "w" + semester_year.to_s
-  end
-  db_semester.semester_id = semester_id
+  # if the semester begins and ends in the same year, it's a sommersemester
+  season = (semester_begin.year == semester_end.year) ? "s" : "w"
+  # the id looks like this: "w14"
+  semester_id = season + (semester_begin.year % 100).to_s
+
+  db_semester = Semester.find_or_initialize_by( semester_id: semester_id )
+
+  db_semester.begin = semester_begin
+  db_semester.end = semester_end
 
   lvtime = semester["Lehrveranstaltungen"].split("bis")
   db_semester.lvbegin = Date.parse(lvtime[0])
