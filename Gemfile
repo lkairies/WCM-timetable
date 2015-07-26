@@ -41,6 +41,9 @@ gem 'autoprefixer-rails'
 # nokogiri for scraping html sources
 gem 'nokogiri'
 
+# sparql-client for querying source database
+gem 'sparql-client'
+
 # iCalendar gem
 gem 'icalendar'
 
