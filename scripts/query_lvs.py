@@ -135,37 +135,6 @@ def getLVs():
       add_entries(newlvs[(entry["lv_id"],entry["unit"])], entry)
   return get_unit_LVs() + list(newlvs.values())
 
-def getStudienGangModule():
-  query="""
-  SELECT DISTINCT ?studiengang ?modul_id
-    WHERE
-    {
-      ?sg rdf:type od:Studiengang .
-      ?sg rdfs:label ?studiengang .
-      ?sgsem od:toStudiengang ?sg .
-      ?modul_id od:toStudiengangSemester ?sgsem .
-      ?modul_id rdf:type od:Module
-    }"""
-  result_modules = simplify_result(query_odfmi(query))
-  for sgmodul in result_modules:
-    sgmodul["modul_id"] = sgmodul["modul_id"].replace(PREFIX_ODS, "")
-
-  query="""
-  SELECT DISTINCT ?studiengang ?modul_id
-    WHERE
-    {
-      ?sg rdf:type od:Studiengang .
-      ?sg rdfs:label ?studiengang .
-      ?sgsem od:toStudiengang ?sg .
-      ?modul_id od:recommendedFor ?sgsem .
-      ?modul_id rdf:type od:Unit .
-      FILTER NOT EXISTS { ?modul_id od:relatedModule ?mod }
-    }"""
-  result_units = simplify_result(query_odfmi(query))
-  for sgmodul in result_units:
-    sgmodul["modul_id"] = fake_modul_id(sgmodul["modul_id"])
-  return result_modules + result_units
-
 def getUnitsAsModule():
   query="""
   SELECT DISTINCT ?modul_id ?titel
@@ -217,9 +186,7 @@ def getModule():
 
 if __name__ == "__main__":
   request = sys.argv[1]
-  if request == "studiengangmodule":
-    result = getStudienGangModule()
-  elif request == "lehrveranstaltungen":
+  if request == "lehrveranstaltungen":
     result = getLVs()
   elif request == "module":
     result = getModule()

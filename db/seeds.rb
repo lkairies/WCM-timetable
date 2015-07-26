@@ -9,9 +9,17 @@
 require 'date'
 require 'open-uri'
 require 'nokogiri'
+require 'sparql/client'
 
-# TODO: move uri to config file
-akademisches_jahr_uri = "https://www.zv.uni-leipzig.de/studium/studienorganisation/akademisches-jahr.html"
+# TODO: move uris to config file
+AKADEMISCHES_JAHR_URI = "https://www.zv.uni-leipzig.de/studium/studienorganisation/akademisches-jahr.html"
+DATABASE_SPARQL_URI = "http://pcai003.informatik.uni-leipzig.de:8892/sparql"
+
+PREFIX_HOST = "http://od.fmi.uni-leipzig.de/"
+PREFIX_ODS = PREFIX_HOST+"studium/"
+PREFIX_OD = PREFIX_HOST+"model/"
+SPARQL_PREFIXES = "PREFIX od: <" + PREFIX_OD + ">\n" +
+    "PREFIX ods: <" + PREFIX_ODS + ">\n"
 
 # get semester information from the official webpage
 # this includes:
@@ -19,7 +27,7 @@ akademisches_jahr_uri = "https://www.zv.uni-leipzig.de/studium/studienorganisati
 #  > start and end date of lehrveranstaltungs in the semester
 #  > list of days at which lehrveranstaltungs will actually happen (example: 0,1,2,3,4,5,7,8,9,10,12,14,...)
 #    counting starts with the start date of lehrveranstaltungs in the semester
-doc = Nokogiri::HTML(open(akademisches_jahr_uri))
+doc = Nokogiri::HTML(open(AKADEMISCHES_JAHR_URI))
 doc.xpath('//*[@id="content-inner"]/div/table/tbody').each do |tbody_tag|
   semester = {}
   tbody_tag.children.each do |tr_tag|
@@ -75,6 +83,24 @@ def create_or_update_modul(modul)
   end
 end
 
+def query_odfmi(query)
+  sparql = SPARQL::Client.new(DATABASE_SPARQL_URI)
+  result = []
+  sparql.query(query).each do |entry|
+    hash = {}
+    entry.bindings.each do |key,value|
+      hash[key] = value.to_s
+    end
+    result.push(hash)
+  end
+  return result
+end
+
+def fake_modul_id(unit_uri)
+  prefix_unit_as_modul = "UNIT-"
+  return prefix_unit_as_modul + unit_uri.sub(PREFIX_ODS, "").gsub(".", "-")
+end
+
 json_moduls = `scripts/query_lvs.py module`
 modules = JSON.parse(json_moduls)
 modules.each do |mod|
@@ -114,10 +140,46 @@ modules.each do |mod|
   create_or_update_modul(mod)
 end
 
-json_studiengangmodule = `scripts/query_lvs.py studiengangmodule`
-sgmodule = JSON.parse(json_studiengangmodule)
-sgmodule.each do |sm|
-  StudiengangModul.create!(sm)
+query = SPARQL_PREFIXES + "
+    SELECT DISTINCT ?studiengang ?modul_id
+      WHERE
+      {
+        ?sg rdf:type od:Studiengang .
+        ?sg rdfs:label ?studiengang .
+        ?sgsem od:toStudiengang ?sg .
+        ?modul_id od:toStudiengangSemester ?sgsem .
+        ?modul_id rdf:type od:Module
+      }"
+
+result_modules = query_odfmi(query)
+result_modules.each do |sgmodul|
+  sgmodul[:modul_id] = sgmodul[:modul_id].sub(PREFIX_ODS, "")
+end
+
+query = SPARQL_PREFIXES + "
+  SELECT DISTINCT ?studiengang ?modul_id
+    WHERE
+    {
+      ?sg rdf:type od:Studiengang .
+      ?sg rdfs:label ?studiengang .
+      ?sgsem od:toStudiengang ?sg .
+      ?modul_id od:recommendedFor ?sgsem .
+      ?modul_id rdf:type od:Unit .
+      FILTER NOT EXISTS { ?modul_id od:relatedModule ?mod }
+    }"
+
+result_units = query_odfmi(query)
+result_units.each do |sgmodul|
+  sgmodul[:modul_id] = fake_modul_id(sgmodul[:modul_id])
+end
+
+sgmodule = result_modules + result_units
+
+StudiengangModul.transaction do
+  StudiengangModul.destroy_all
+  sgmodule.each do |sm|
+    StudiengangModul.create!(sm)
+  end
 end
 
 json_lehrveranstaltungen = `scripts/query_lvs.py lehrveranstaltungen`
