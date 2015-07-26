@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150324152817) do
+ActiveRecord::Schema.define(version: 20150726103832) do
 
   create_table "lehrveranstaltungs", force: true do |t|
     t.string   "titel"
@@ -67,6 +67,8 @@ ActiveRecord::Schema.define(version: 20150324152817) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "semesters", ["semester_id"], name: "index_semesters_on_semester_id", unique: true
 
   create_table "studiengang_moduls", force: true do |t|
     t.string   "studiengang"
