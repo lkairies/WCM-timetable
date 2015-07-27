@@ -27,51 +27,53 @@ SPARQL_PREFIXES = "PREFIX od: <" + PREFIX_OD + ">\n" +
 #  > start and end date of lehrveranstaltungs in the semester
 #  > list of days at which lehrveranstaltungs will actually happen (example: 0,1,2,3,4,5,7,8,9,10,12,14,...)
 #    counting starts with the start date of lehrveranstaltungs in the semester
-doc = Nokogiri::HTML(open(AKADEMISCHES_JAHR_URI))
-doc.xpath('//*[@id="content-inner"]/div/table/tbody').each do |tbody_tag|
-  semester = {}
-  tbody_tag.children.each do |tr_tag|
-    semester[tr_tag.children[0].content] = tr_tag.children[1].content
-  end
+def seed_semesterinfo
+  doc = Nokogiri::HTML(open(AKADEMISCHES_JAHR_URI))
+  doc.xpath('//*[@id="content-inner"]/div/table/tbody').each do |tbody_tag|
+    semester = {}
+    tbody_tag.children.each do |tr_tag|
+      semester[tr_tag.children[0].content] = tr_tag.children[1].content
+    end
 
-  time = semester["Zeitraum"].split("bis")
-  semester_begin = Date.parse(time[0])
-  semester_end = Date.parse(time[1])
+    time = semester["Zeitraum"].split("bis")
+    semester_begin = Date.parse(time[0])
+    semester_end = Date.parse(time[1])
 
-  # if the semester begins and ends in the same year, it's a sommersemester
-  season = (semester_begin.year == semester_end.year) ? "s" : "w"
-  # the id looks like this: "w14"
-  semester_id = season + (semester_begin.year % 100).to_s
+    # if the semester begins and ends in the same year, it's a sommersemester
+    season = (semester_begin.year == semester_end.year) ? "s" : "w"
+    # the id looks like this: "w14"
+    semester_id = season + (semester_begin.year % 100).to_s
 
-  db_semester = Semester.find_or_initialize_by( semester_id: semester_id )
+    db_semester = Semester.find_or_initialize_by( semester_id: semester_id )
 
-  db_semester.begin = semester_begin
-  db_semester.end = semester_end
+    db_semester.begin = semester_begin
+    db_semester.end = semester_end
 
-  lvtime = semester["Lehrveranstaltungen"].split("bis")
-  db_semester.lvbegin = Date.parse(lvtime[0])
-  db_semester.lvend = Date.parse(lvtime[1])
+    lvtime = semester["Lehrveranstaltungen"].split("bis")
+    db_semester.lvbegin = Date.parse(lvtime[0])
+    db_semester.lvend = Date.parse(lvtime[1])
 
-  vorlesungstage = Array(0..(db_semester.lvend-db_semester.lvbegin))
-  semester.each do |key, str|
-    if str.include? "vorlesungsfrei"
-      #logger.debug "break: #{str}"
-      if str.include? " bis "
-        dates = str.split(" bis ")
-        break_begin = Date.parse(dates[0])
-        break_end = Date.parse(dates[1])
-        vorlesungstage -= Array((break_begin-db_semester.lvbegin).to_i..(break_end-db_semester.lvbegin).to_i)
-      else
-        break_date = Date.parse(str)
-        #logger.debug "at: #{break_date}"
-        vorlesungstage -= [(break_date-db_semester.lvbegin).to_i]
+    vorlesungstage = Array(0..(db_semester.lvend-db_semester.lvbegin))
+    semester.each do |key, str|
+      if str.include? "vorlesungsfrei"
+        #logger.debug "break: #{str}"
+        if str.include? " bis "
+          dates = str.split(" bis ")
+          break_begin = Date.parse(dates[0])
+          break_end = Date.parse(dates[1])
+          vorlesungstage -= Array((break_begin-db_semester.lvbegin).to_i..(break_end-db_semester.lvbegin).to_i)
+        else
+          break_date = Date.parse(str)
+          #logger.debug "at: #{break_date}"
+          vorlesungstage -= [(break_date-db_semester.lvbegin).to_i]
+        end
       end
     end
+
+    db_semester.vorlesungstage = vorlesungstage
+
+    db_semester.save
   end
-
-  db_semester.vorlesungstage = vorlesungstage
-
-  db_semester.save
 end
 
 def create_or_update_modul(modul)
@@ -156,88 +158,99 @@ def get_module()
   return newmoduls.values + get_units_as_module
 end
 
-# maybe the module table needs a reset before seeding values...?
-get_module.each do |mod|
-  create_or_update_modul(mod)
-end
-
-case Rails.env
-when "production"
-  jsonmaster = `scripts/parse_master.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html`
-  jsonbachelor = `scripts/parse_bachelor.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html`
-else
-  tempdir = 'tmp'
-  FileUtils.mkdir_p(tempdir) unless File.directory?(tempdir)
-  ma_tmp_file = File.absolute_path(tempdir+'/ma-inf-module.pdf')
-  unless File.exist?( ma_tmp_file )
-    open(ma_tmp_file, 'wb') do |file|
-      file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html').read
-    end
+def seed_modules
+  # maybe the module table needs a reset before seeding values...?
+  get_module.each do |mod|
+    create_or_update_modul(mod)
   end
-  jsonmaster = `scripts/parse_master.py file:#{ma_tmp_file}`
-  ba_tmp_file = File.absolute_path(tempdir+'/ba-inf-module.pdf')
-  unless File.exist?( ba_tmp_file )
-    open(ba_tmp_file, 'wb') do |file|
-      file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html').read
+
+  case Rails.env
+  when "production"
+    jsonmaster = `scripts/parse_master.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html`
+    jsonbachelor = `scripts/parse_bachelor.py http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html`
+  else
+    tempdir = 'tmp'
+    FileUtils.mkdir_p(tempdir) unless File.directory?(tempdir)
+    ma_tmp_file = File.absolute_path(tempdir+'/ma-inf-module.pdf')
+    unless File.exist?( ma_tmp_file )
+      open(ma_tmp_file, 'wb') do |file|
+        file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ma-inf/ma-inf-module.html').read
+      end
     end
+    jsonmaster = `scripts/parse_master.py file:#{ma_tmp_file}`
+    ba_tmp_file = File.absolute_path(tempdir+'/ba-inf-module.pdf')
+    unless File.exist?( ba_tmp_file )
+      open(ba_tmp_file, 'wb') do |file|
+        file << open('http://www.informatik.uni-leipzig.de/ifi/studium/studiengnge/ba-inf/ba-inf-module.html').read
+      end
+    end
+    jsonbachelor = `scripts/parse_bachelor.py file:#{ba_tmp_file}`
   end
-  jsonbachelor = `scripts/parse_bachelor.py file:#{ba_tmp_file}`
+
+  modules = JSON.parse(jsonmaster)
+  modules.each do |mod|
+    create_or_update_modul(mod)
+  end
+
+  modules = JSON.parse(jsonbachelor)
+  modules.each do |mod|
+    create_or_update_modul(mod)
+  end
 end
 
-modules = JSON.parse(jsonmaster)
-modules.each do |mod|
-  create_or_update_modul(mod)
-end
+def seed_studiengangmoduls
+  query = SPARQL_PREFIXES + "
+      SELECT DISTINCT ?studiengang ?modul_id
+        WHERE
+        {
+          ?sg rdf:type od:Studiengang .
+          ?sg rdfs:label ?studiengang .
+          ?sgsem od:toStudiengang ?sg .
+          ?modul_id od:toStudiengangSemester ?sgsem .
+          ?modul_id rdf:type od:Module
+        }"
 
-modules = JSON.parse(jsonbachelor)
-modules.each do |mod|
-  create_or_update_modul(mod)
-end
+  result_modules = query_odfmi(query)
+  result_modules.each do |sgmodul|
+    sgmodul[:modul_id] = sgmodul[:modul_id].sub(PREFIX_ODS, "")
+  end
 
-query = SPARQL_PREFIXES + "
+  query = SPARQL_PREFIXES + "
     SELECT DISTINCT ?studiengang ?modul_id
       WHERE
       {
         ?sg rdf:type od:Studiengang .
         ?sg rdfs:label ?studiengang .
         ?sgsem od:toStudiengang ?sg .
-        ?modul_id od:toStudiengangSemester ?sgsem .
-        ?modul_id rdf:type od:Module
+        ?modul_id od:recommendedFor ?sgsem .
+        ?modul_id rdf:type od:Unit .
+        FILTER NOT EXISTS { ?modul_id od:relatedModule ?mod }
       }"
 
-result_modules = query_odfmi(query)
-result_modules.each do |sgmodul|
-  sgmodul[:modul_id] = sgmodul[:modul_id].sub(PREFIX_ODS, "")
-end
+  result_units = query_odfmi(query)
+  result_units.each do |sgmodul|
+    sgmodul[:modul_id] = fake_modul_id(sgmodul[:modul_id])
+  end
 
-query = SPARQL_PREFIXES + "
-  SELECT DISTINCT ?studiengang ?modul_id
-    WHERE
-    {
-      ?sg rdf:type od:Studiengang .
-      ?sg rdfs:label ?studiengang .
-      ?sgsem od:toStudiengang ?sg .
-      ?modul_id od:recommendedFor ?sgsem .
-      ?modul_id rdf:type od:Unit .
-      FILTER NOT EXISTS { ?modul_id od:relatedModule ?mod }
-    }"
+  sgmodule = result_modules + result_units
 
-result_units = query_odfmi(query)
-result_units.each do |sgmodul|
-  sgmodul[:modul_id] = fake_modul_id(sgmodul[:modul_id])
-end
-
-sgmodule = result_modules + result_units
-
-StudiengangModul.transaction do
-  StudiengangModul.destroy_all
-  sgmodule.each do |sm|
-    StudiengangModul.create!(sm)
+  StudiengangModul.transaction do
+    StudiengangModul.destroy_all
+    sgmodule.each do |sm|
+      StudiengangModul.create!(sm)
+    end
   end
 end
 
-json_lehrveranstaltungen = `scripts/query_lvs.py lehrveranstaltungen`
-lvs = JSON.parse(json_lehrveranstaltungen)
-lvs.each do |lv|
-  Lehrveranstaltung.create!(lv)
+def seed_lehrveranstaltungs
+  json_lehrveranstaltungen = `scripts/query_lvs.py lehrveranstaltungen`
+  lvs = JSON.parse(json_lehrveranstaltungen)
+  lvs.each do |lv|
+    Lehrveranstaltung.create!(lv)
+  end
 end
+
+seed_semesterinfo
+seed_modules
+seed_studiengangmoduls
+seed_lehrveranstaltungs
