@@ -242,11 +242,112 @@ def seed_studiengangmoduls
   end
 end
 
+def postprocess_lvs(resultset)
+  # adds e1 and e2, stores result in e1
+  def add_entries(e1, e2)
+    unless e1[:dozent].include?(e2[:dozent][0])
+      e1[:dozent].push(e2[:dozent][0])
+    end
+  end
+
+  #use a hash to find duplicate (lv, unit) entries
+  #when we find duplicates, add them together.
+  newlvs = {}
+  resultset.each do |entry|
+    entry[:dozent] = [entry[:dozent]]
+    lv_id = entry[:lv_id].split("/")
+    entry[:semester] = lv_id[-2]
+    entry[:lv_id] = lv_id[-2] + "." + lv_id[-1]
+    entry[:form] = entry[:form].sub(PREFIX_OD, "")
+    # for hash keys use arrays instead of tuples
+    entry_hash = [entry[:lv_id], entry[:unit]]
+    if newlvs.include?(entry_hash)
+      add_entries(newlvs[entry_hash], entry)
+    else
+      newlvs[entry_hash] = entry
+    end
+  end
+  return newlvs.values
+end
+
+def get_unit_lvs()
+  query = "
+  SELECT DISTINCT ?titel ?lv_id ?form ?unit ?unit_name ?zeit_von ?zeit_bis ?raum ?dozent ?wochentag
+    WHERE
+    {
+      ?lv_id rdf:type od:LV .
+      ?lv_id rdf:type ?form .
+      FILTER ( ?form != od:LV ) .
+      ?kurs od:containsLV ?lv_id .
+      ?unit od:containsKurs ?kurs .
+      ?unit rdfs:label ?unit_name .
+      FILTER NOT EXISTS { ?unit od:relatedModule ?modul } .
+      ?lv_id rdfs:label ?titel .
+      OPTIONAL {
+        ?lv_id od:beginsAt ?zeit_von .
+        ?lv_id od:endsAt ?zeit_bis
+      } .
+      OPTIONAL {
+        ?lv_id od:locatedAt ?r .
+        ?r rdfs:label ?raum
+      } .
+      ?lv_id od:servedBy ?person .
+      ?person foaf:name ?dozent .
+      ?lv_id od:dayOfWeek ?wochentag
+    }
+  "
+  result = query_odfmi(query)
+
+  result.each do |entry|
+    entry[:modul_id] = fake_modul_id(entry[:unit])
+  end
+  return postprocess_lvs(result)
+end
+
+#returns a list of hashes, each hash represents one lv.
+# (lv, unit) pairs are guaranteed to be uniqe
+def get_lvs()
+  #this is supposed to transform modul uri to modulnummer, but doesn't work with the virtuoso server
+  # BIND ( ?modul_id AS replace(str(?modul), "^http://od.fmi.uni-leipzig.de/studium/", ""))
+  query = "
+  SELECT DISTINCT ?titel ?lv_id ?form ?modul_id ?unit ?unit_name ?zeit_von ?zeit_bis ?raum ?dozent ?wochentag
+    WHERE
+    {
+      ?lv_id rdf:type od:LV .
+      ?lv_id rdf:type ?form .
+      FILTER ( ?form != od:LV ) .
+      ?kurs od:containsLV ?lv_id .
+      ?unit od:containsKurs ?kurs .
+      ?unit rdfs:label ?unit_name .
+      ?unit od:relatedModule ?modul_id .
+      ?lv_id rdfs:label ?titel .
+      OPTIONAL {
+        ?lv_id od:beginsAt ?zeit_von .
+        ?lv_id od:endsAt ?zeit_bis
+      } .
+      OPTIONAL {
+        ?lv_id od:locatedAt ?r .
+        ?r rdfs:label ?raum
+      } .
+      ?lv_id od:servedBy ?person .
+      ?person foaf:name ?dozent .
+      ?lv_id od:dayOfWeek ?wochentag
+    }
+  "
+  result = query_odfmi(query)
+
+  result.each do |entry|
+    entry[:modul_id] = entry[:modul_id].sub(PREFIX_ODS, "")
+  end
+  return get_unit_lvs + postprocess_lvs(result)
+end
+
 def seed_lehrveranstaltungs
-  json_lehrveranstaltungen = `scripts/query_lvs.py lehrveranstaltungen`
-  lvs = JSON.parse(json_lehrveranstaltungen)
-  lvs.each do |lv|
-    Lehrveranstaltung.create!(lv)
+  Lehrveranstaltung.transaction do
+    Lehrveranstaltung.destroy_all
+    get_lvs.each do |lv|
+      Lehrveranstaltung.create!(lv)
+    end
   end
 end
 
