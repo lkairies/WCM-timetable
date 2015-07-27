@@ -101,9 +101,63 @@ def fake_modul_id(unit_uri)
   return prefix_unit_as_modul + unit_uri.sub(PREFIX_ODS, "").gsub(".", "-")
 end
 
-json_moduls = `scripts/query_lvs.py module`
-modules = JSON.parse(json_moduls)
-modules.each do |mod|
+def get_units_as_module()
+  query="
+  SELECT DISTINCT ?modul_id ?titel
+    WHERE
+    {
+      ?modul_id rdf:type od:Unit .
+      FILTER NOT EXISTS { ?modul_id od:relatedModule ?modul .
+        ?modul rdf:type od:Module } .
+      OPTIONAL { ?modul_id od:hasUmfang ?sws }
+      ?modul_id rdfs:label ?titel
+    }
+  "
+
+  result = query_odfmi(query)
+  result.each do |unit|
+    unit[:modul_id] = fake_modul_id(unit[:modul_id])
+  end
+  return result
+end
+
+def get_module()
+  query="
+  SELECT DISTINCT ?modul_id ?sws ?titel
+    WHERE
+    {
+      ?modul_id rdf:type od:Module .
+      ?unit od:relatedModule ?modul_id .
+      ?unit rdf:type od:Unit .
+      OPTIONAL { ?unit od:hasUmfang ?sws } .
+      ?modul_id rdfs:label ?titel
+    }
+  "
+
+  # adds e1 and e2, stores result in e1
+  def add_entries(e1, e2)
+    if e1[:sws] != e2[:sws]
+      e1[:sws] = e1[:sws] + "\n" + e2[:sws]
+    end
+  end
+
+  result = query_odfmi(query)
+
+  newmoduls = {}
+  result.each do |sgmodul|
+    modul_id = sgmodul[:modul_id].sub(PREFIX_ODS, "")
+    sgmodul[:modul_id] = modul_id
+    if newmoduls.has_key?(modul_id)
+      add_entries(newmoduls[modul_id], sgmodul)
+    else
+      newmoduls[modul_id] = sgmodul
+    end
+  end
+  return newmoduls.values + get_units_as_module
+end
+
+# maybe the module table needs a reset before seeding values...?
+get_module.each do |mod|
   create_or_update_modul(mod)
 end
 
