@@ -22,7 +22,6 @@ Prerequisites
 system packages:
 - sqlite
 - nodejs
-- python-sparqlwrapper
 
 ruby gems:
 - rails
