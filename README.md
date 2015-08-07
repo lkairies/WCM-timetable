@@ -22,6 +22,7 @@ Prerequisites
 system packages:
 - sqlite
 - nodejs
+- tzdata
 
 ruby gems:
 - rails
