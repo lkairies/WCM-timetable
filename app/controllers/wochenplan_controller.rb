@@ -30,6 +30,7 @@ class WochenplanController < ApplicationController
   #  3. restrictions in date (different styles of formatting)
   #    > 11.01./12.01.2014
   #    > 11./12.01.2014
+  #    > 06.11.-18.12.
   #    > vom 09.12.2014 bis 19.01.2015
   #    > ab 13.11.
   #    > bis 12.6.
@@ -77,6 +78,15 @@ class WochenplanController < ApplicationController
       #logger.debug "block: #{block.inspect}"
       lv_begin_date = Date.new(year=block["syear"], month=block["smonth"], day=block["sday"])
       lv_end_date = Date.new(year=block["eyear"], month=block["emonth"], day=block["eday"])
+    end
+
+    #detect freitags (06.11.-18.12.)
+    if block.empty?
+      wd.match(/(?<sday>\d\d?)\.(?<smonth>\d\d?)\.[#{delimeters}](?<eday>\d\d?)\.(?<emonth>\d\d?)\./) do |match|
+        block = Hash[ match.names.zip(match.captures) ]
+        lv_begin_date = get_date_in_semester(semester, block["sday"].to_i, block["smonth"].to_i)
+        lv_end_date = get_date_in_semester(semester, block["eday"].to_i, block["emonth"].to_i)
+      end
     end
 
     if block.empty?
